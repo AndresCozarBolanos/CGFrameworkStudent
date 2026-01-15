@@ -427,3 +427,35 @@ void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 		y += y_inc;
 	}
 }
+
+
+void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,int borderWidth, bool isFilled, const Color& fillColor){
+	if (isFilled) {
+		for (int i = y; i < y + h; i++) {
+			for (int j = x; j < x + w; j++) {
+				SetPixel(j, i, fillColor);
+			}
+		}
+	}
+	
+	for (int i = 0; i < borderWidth; i++) {
+		//Top 
+		for (int j = x; j < x + w; j++) {
+			SetPixel(j, y + i, borderColor);
+		}
+		//Bottom 
+		for (int j = x; j < x + w; j++) {
+			SetPixel(j, y + h - 1 - i, borderColor);
+		}
+		//Left 
+		for (int j = y; j < y + h; j++) {
+			SetPixel(x + i, j, borderColor);
+		}
+		//Right 
+		for (int j = y; j < y + h; j++) {
+			SetPixel(x + w - 1 - i, j, borderColor);
+		}
+	}
+}
+
+void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor){}

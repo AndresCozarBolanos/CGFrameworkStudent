@@ -20,6 +20,8 @@ public:
 
 	float time;
 
+	int borderWidth = 1;
+
 	// Input
 	const Uint8* keystate;
 	int mouse_state; // Tells which buttons are pressed

@@ -81,6 +81,12 @@ public:
 	// Draw a line using DDA algorithm	
 	void DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c);
 
+	//Draw a rectangle
+	void DrawRect(int x, int y, int w, int h, const Color& borderColor, int borderWidth, bool isFilled, const Color& fillColor);
+
+	//Draw a triangle
+	void DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor);
+
 	// Used to easy code
 	#ifndef IGNORE_LAMBDAS
 

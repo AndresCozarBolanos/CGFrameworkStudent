@@ -33,10 +33,8 @@ void Application::Render(void)
 {
 	// ...
 	framebuffer.Fill(Color::BLACK);
-	int x = framebuffer.width / 2;
-	int y = framebuffer.height / 2;
-	float time = this->time;
-	framebuffer.DrawLineDDA(x, y, x + 100 * cos(time), y + 100 * sin(time), Color::WHITE);
+
+	framebuffer.DrawRect(100, 100, 200, 150, Color::RED, 1, true, Color::BLUE);
 
 	framebuffer.Render();
 }
@@ -53,6 +51,14 @@ void Application::OnKeyPressed( SDL_KeyboardEvent event )
 	// KEY CODES: https://wiki.libsdl.org/SDL2/SDL_Keycode
 	switch(event.keysym.sym) {
 		case SDLK_ESCAPE: exit(0); break; // ESC key, kill the app
+		case SDLK_PLUS:
+		case SDLK_KP_PLUS: // '+' 
+			borderWidth++;
+			break;
+		case SDLK_MINUS:
+		case SDLK_KP_MINUS: // '-' 
+			borderWidth = std::max(1, borderWidth - 1); 
+			break;
 	}
 }
 

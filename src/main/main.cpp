@@ -1,5 +1,6 @@
 #include "framework/application.h"
 #include "framework/utils.h"
+#include "framework/image.h"
 
 int main(int argc, char **argv)
 {

@@ -397,3 +397,33 @@ void FloatImage::Resize(unsigned int width, unsigned int height)
 	this->height = height;
 	pixels = new_pixels;
 }
+
+void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
+	//Desplacement directions
+	float dx = x1 - x0;
+	float dy = y1 - y0;
+
+	//Quantity of steps
+	float steps = std::max(std::abs(dx), std::abs(dy));
+
+	//=0 case
+	if (steps == 0) {
+		SetPixel(x0, y0, c);
+		return;
+	}
+
+	//Increment values
+	float x_inc = dx / steps;
+	float y_inc = dy / steps;
+
+	//Initial values
+	float x = x0;
+	float y = y0;
+
+	//Drowing
+	for (int i = 0; i <= steps; i++) {
+		SetPixel(static_cast<int>(round(x)), static_cast<int>(round(y)), c);
+		x += x_inc;
+		y += y_inc;
+	}
+}

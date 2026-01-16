@@ -37,6 +37,7 @@ public:
 
 	// CPU Global framebuffer
 	Image framebuffer;
+	//Image icon1;
 
 	// Constructor and main methods
 	Application(const char* caption, int width, int height);

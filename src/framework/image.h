@@ -84,6 +84,8 @@ public:
 		 int borderWidth, bool isFilled, const Color& fillColor);
 	void DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
 		 const Color& borderColor, bool isFilled, const Color& fillColor);
+	void ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table);
+	
 	// Lab 1-2.2 
 	void DrawImage(const Image& image, int x, int y);
 

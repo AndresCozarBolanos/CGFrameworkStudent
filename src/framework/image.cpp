@@ -450,6 +450,59 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,
 	}
 }
 
+void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table) {
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    float steps = std::max(std::abs(dx), std::abs(dy));
+    
+    if (steps == 0) return;
+
+    float x_inc = dx / steps;
+    float y_inc = dy / steps;
+    float x = x0;
+    float y = y0;
+
+    for (int i = 0; i <= steps; i++) {
+        int iy = static_cast<int>(round(y));
+        int ix = static_cast<int>(round(x));
+        
+        if (iy >= 0 && iy < this->height) {
+            table[iy].push_back(ix);
+        }
+        
+        x += x_inc;
+        y += y_inc;
+    }
+}
+
 // Draws and fills a triangle by using the Active Edges Table (AET) approach
-void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
-	 const Color& borderColor, bool isFilled, const Color& fillColor){}
+void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, 
+                         const Color& borderColor, bool isFilled, const Color& fillColor) {
+    
+    std::vector<int>* table = new std::vector<int>[this->height];
+
+    ScanLineDDA(p0.x, p0.y, p1.x, p1.y, table);
+    ScanLineDDA(p1.x, p1.y, p2.x, p2.y, table);
+    ScanLineDDA(p2.x, p2.y, p0.x, p0.y, table);
+
+    if (isFilled) {
+        for (int y = 0; y < this->height; y++) {
+            if (table[y].size() < 2) continue; 
+
+            std::sort(table[y].begin(), table[y].end());
+            
+            int minX = table[y].front();
+            int maxX = table[y].back();
+
+            for (int x = minX; x <= maxX; x++) {
+                SetPixel(x, y, fillColor);
+            }
+        }
+    }
+
+    DrawLineDDA(p0.x, p0.y, p1.x, p1.y, borderColor);
+    DrawLineDDA(p1.x, p1.y, p2.x, p2.y, borderColor);
+    DrawLineDDA(p2.x, p2.y, p0.x, p0.y, borderColor);
+
+    delete[] table;
+}

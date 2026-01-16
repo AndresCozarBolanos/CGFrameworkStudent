@@ -26,6 +26,7 @@ Application::~Application()
 void Application::Init(void)
 {
 	std::cout << "Initiating app..." << std::endl;
+	//icon1.LoadPNG("image/clear.png"); int a = 0;
 }
 
 // Render one frame

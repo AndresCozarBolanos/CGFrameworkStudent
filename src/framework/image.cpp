@@ -398,29 +398,26 @@ void FloatImage::Resize(unsigned int width, unsigned int height)
 	pixels = new_pixels;
 }
 
+// --------------- Lab 1 ---------------
+
+// Draws lines using the DDA algorithm
 void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
-	//Desplacement directions
+
 	float dx = x1 - x0;
 	float dy = y1 - y0;
-
-	//Quantity of steps
 	float steps = std::max(std::abs(dx), std::abs(dy));
 
-	//=0 case
 	if (steps == 0) {
 		SetPixel(x0, y0, c);
 		return;
 	}
 
-	//Increment values
 	float x_inc = dx / steps;
 	float y_inc = dy / steps;
 
-	//Initial values
 	float x = x0;
 	float y = y0;
 
-	//Drowing
 	for (int i = 0; i <= steps; i++) {
 		SetPixel(static_cast<int>(round(x)), static_cast<int>(round(y)), c);
 		x += x_inc;
@@ -428,8 +425,10 @@ void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 	}
 }
 
-
-void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,int borderWidth, bool isFilled, const Color& fillColor){
+// Draws a rectangle with a border of a specific width and fills it
+void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,
+	int borderWidth, bool isFilled, const Color& fillColor){
+	
 	if (isFilled) {
 		for (int i = y; i < y + h; i++) {
 			for (int j = x; j < x + w; j++) {
@@ -439,23 +438,18 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,int bo
 	}
 	
 	for (int i = 0; i < borderWidth; i++) {
-		//Top 
 		for (int j = x; j < x + w; j++) {
 			SetPixel(j, y + i, borderColor);
-		}
-		//Bottom 
-		for (int j = x; j < x + w; j++) {
+		}for (int j = x; j < x + w; j++) {
 			SetPixel(j, y + h - 1 - i, borderColor);
-		}
-		//Left 
-		for (int j = y; j < y + h; j++) {
+		}for (int j = y; j < y + h; j++) {
 			SetPixel(x + i, j, borderColor);
-		}
-		//Right 
-		for (int j = y; j < y + h; j++) {
+		}for (int j = y; j < y + h; j++) {
 			SetPixel(x + w - 1 - i, j, borderColor);
 		}
 	}
 }
 
-void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor){}
+// Draws and fills a triangle by using the Active Edges Table (AET) approach
+void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
+	 const Color& borderColor, bool isFilled, const Color& fillColor){}

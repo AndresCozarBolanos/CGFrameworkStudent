@@ -78,14 +78,14 @@ public:
 	bool LoadTGA(const char* filename, bool flip_y = false);
 	bool SaveTGA(const char* filename);
 
-	// Draw a line using DDA algorithm	
+	// Lab 1-2.1
 	void DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c);
-
-	//Draw a rectangle
-	void DrawRect(int x, int y, int w, int h, const Color& borderColor, int borderWidth, bool isFilled, const Color& fillColor);
-
-	//Draw a triangle
-	void DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, const Color& borderColor, bool isFilled, const Color& fillColor);
+	void DrawRect(int x, int y, int w, int h, const Color& borderColor,
+		 int borderWidth, bool isFilled, const Color& fillColor);
+	void DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
+		 const Color& borderColor, bool isFilled, const Color& fillColor);
+	// Lab 1-2.2 
+	void DrawImage(const Image& image, int x, int y);
 
 	// Used to easy code
 	#ifndef IGNORE_LAMBDAS

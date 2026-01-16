@@ -35,7 +35,12 @@ void Application::Render(void)
 	// ...
 	framebuffer.Fill(Color::BLACK);
 
-	framebuffer.DrawRect(100, 100, 200, 150, Color::RED, 1, true, Color::BLUE);
+	Vector2 v1(400, 100);  // Punta arriba (centro)
+	Vector2 v2(150, 450);  // Esquina abajo izquierda
+	Vector2 v3(650, 450);  // Esquina abajo derecha
+
+	// Llamada a la función
+	framebuffer.DrawTriangle(v1, v2, v3, Color::RED, true, Color::BLUE);
 
 	framebuffer.Render();
 }

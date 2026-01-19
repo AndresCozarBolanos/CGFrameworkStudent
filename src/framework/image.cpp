@@ -398,13 +398,11 @@ void FloatImage::Resize(unsigned int width, unsigned int height)
 	pixels = new_pixels;
 }
 
-// --------------- Lab 1 ---------------
-
 // Draws lines using the DDA algorithm
 void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 
-	float dx = x1 - x0;
-	float dy = y1 - y0;
+	float dx = float(x1) - float(x0);
+    float dy = float(y1) - float(y0);
 	float steps = std::max(std::abs(dx), std::abs(dy));
 
 	if (steps == 0) {
@@ -415,11 +413,11 @@ void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 	float x_inc = dx / steps;
 	float y_inc = dy / steps;
 
-	float x = x0;
-	float y = y0;
+	float x = float(x0);
+    float y = float(y0);
 
 	for (int i = 0; i <= steps; i++) {
-		SetPixel(static_cast<int>(round(x)), static_cast<int>(round(y)), c);
+		SetPixel(int(std::round(x)), int(std::round(y)), c);
 		x += x_inc;
 		y += y_inc;
 	}
@@ -451,22 +449,23 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,
 }
 
 void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table) {
-    float dx = x1 - x0;
-    float dy = y1 - y0;
-    float steps = std::max(std::abs(dx), std::abs(dy));
     
-    if (steps == 0) return;
+	float dx = float(x1) - float(x0);
+    float dy = float(y1) - float(y0);
+    float steps = std::max(std::abs(dx), std::abs(dy));
+    if (steps == 0.0f) return;
 
     float x_inc = dx / steps;
     float y_inc = dy / steps;
-    float x = x0;
-    float y = y0;
+
+    float x = float(x0);
+    float y = float(y0);
 
     for (int i = 0; i <= steps; i++) {
-        int iy = static_cast<int>(round(y));
-        int ix = static_cast<int>(round(x));
+        int ix = int(std::round(x));
+        int iy = int(std::round(y));
         
-        if (iy >= 0 && iy < this->height) {
+        if (iy >= 0 && iy < int(this->height)) {
             table[iy].push_back(ix);
         }
         
@@ -476,33 +475,58 @@ void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table)
 }
 
 // Draws and fills a triangle by using the Active Edges Table (AET) approach
-void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2, 
-                         const Color& borderColor, bool isFilled, const Color& fillColor) {
-    
+void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
+    const Color& borderColor, bool isFilled, const Color& fillColor)
+{
+    int x0 = (int)std::round(p0.x), y0 = (int)std::round(p0.y);
+    int x1 = (int)std::round(p1.x), y1 = (int)std::round(p1.y);
+    int x2 = (int)std::round(p2.x), y2 = (int)std::round(p2.y);
+
     std::vector<int>* table = new std::vector<int>[this->height];
 
-    ScanLineDDA(p0.x, p0.y, p1.x, p1.y, table);
-    ScanLineDDA(p1.x, p1.y, p2.x, p2.y, table);
-    ScanLineDDA(p2.x, p2.y, p0.x, p0.y, table);
+    ScanLineDDA(x0, y0, x1, y1, table);
+    ScanLineDDA(x1, y1, x2, y2, table);
+    ScanLineDDA(x2, y2, x0, y0, table);
 
     if (isFilled) {
-        for (int y = 0; y < this->height; y++) {
-            if (table[y].size() < 2) continue; 
+        for (int y = 0; y < (int)this->height; ++y) {
+            if (table[y].size() < 2u) continue;
 
             std::sort(table[y].begin(), table[y].end());
-            
+
             int minX = table[y].front();
             int maxX = table[y].back();
 
-            for (int x = minX; x <= maxX; x++) {
+            for (int x = minX; x <= maxX; ++x) {
                 SetPixel(x, y, fillColor);
             }
         }
     }
 
-    DrawLineDDA(p0.x, p0.y, p1.x, p1.y, borderColor);
-    DrawLineDDA(p1.x, p1.y, p2.x, p2.y, borderColor);
-    DrawLineDDA(p2.x, p2.y, p0.x, p0.y, borderColor);
+    // IMPORTANTE: usar ints (no p0.x etc.)
+    DrawLineDDA(x0, y0, x1, y1, borderColor);
+    DrawLineDDA(x1, y1, x2, y2, borderColor);
+    DrawLineDDA(x2, y2, x0, y0, borderColor);
 
     delete[] table;
 }
+
+
+void Image::DrawImage(const Image& src, int x, int y)
+{
+    for (int j = 0; j < (int)src.height; ++j)
+    {
+        int dstY = y + j;
+        if (dstY < 0 || dstY >= (int)this->height) continue;
+
+        for (int i = 0; i < (int)src.width; ++i)
+        {
+            int dstX = x + i;
+            if (dstX < 0 || dstX >= (int)this->width) continue;
+
+            Color c = src.GetPixel(i, j);
+            this->SetPixel(dstX, dstY, c);
+        }
+    }
+}
+

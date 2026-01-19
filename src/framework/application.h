@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <vector> 
+
 #include "main/includes.h"
 #include "framework.h"
 #include "image.h"
+#include "button.h"
 
 class Application
 {
@@ -37,7 +40,41 @@ public:
 
 	// CPU Global framebuffer
 	Image framebuffer;
-	//Image icon1;
+
+	// lab 1
+
+	// ====== NUEVO: lienzo (esto es lo que se guarda/carga) ======
+	Image canvas;                       // MODIFICADO/NUEVO
+	Color backgroundColor = Color::BLACK; // NUEVO
+
+	// ====== Tools (las iremos completando) ======
+	enum class Tool { NONE, PENCIL, ERASER, LINE, RECT, TRIANGLE };  // MODIFICADO
+	Tool currentTool = Tool::NONE;
+	// ====== Estado de colocacion (SIN preview) ======
+
+	bool isPlacing = false;
+	Vector2 startPos;
+	Vector2 endPos;
+
+	// Triangulo por 3 clicks
+	int triClicks = 0;
+	Vector2 triP0;
+	Vector2 triP1;
+
+	// ====== Primitivas guardadas (solo RAM; al reiniciar se borran) ======
+	struct LinePrim { int x0, y0, x1, y1; Color c; };
+	struct RectPrim { int x, y, w, h; Color border; int bw; bool filled; Color fill; };
+	struct TriPrim  { Vector2 p0, p1, p2; Color border; bool filled; Color fill; };
+
+	std::vector<LinePrim> lines;
+	std::vector<RectPrim> rects;
+	std::vector<TriPrim>  tris;
+
+
+	// UI
+
+	std::vector<Button> buttons; // list of toolbar buttons
+	int toolbarH = 50;
 
 	// Constructor and main methods
 	Application(const char* caption, int width, int height);
@@ -53,6 +90,9 @@ public:
 		this->window_width = width;
 		this->window_height = height;
 		this->framebuffer.Resize(width, height);
+		// Modified to also resize the canvas
+		this->canvas.Resize(width, height);
+		this->canvas.Fill(backgroundColor);
 	}
 
 	Vector2 GetWindowSize()

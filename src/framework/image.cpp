@@ -503,7 +503,6 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
         }
     }
 
-    // IMPORTANTE: usar ints (no p0.x etc.)
     DrawLineDDA(x0, y0, x1, y1, borderColor);
     DrawLineDDA(x1, y1, x2, y2, borderColor);
     DrawLineDDA(x2, y2, x0, y0, borderColor);

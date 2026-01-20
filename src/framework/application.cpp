@@ -79,31 +79,69 @@ void Application::Render(void)
 {
 	framebuffer.Fill(Color::BLACK);
 
-	// Tools
-	for (const auto& L : lines)
-		framebuffer.DrawLineDDA(L.x0, L.y0, L.x1, L.y1, L.c);
+	if (currentMode == AppMode::PAINT) {
+		// Tools
+		for (const auto& L : lines)
+			framebuffer.DrawLineDDA(L.x0, L.y0, L.x1, L.y1, L.c);
 
-	for (const auto& R : rects)
-		framebuffer.DrawRect(R.x, R.y, R.w, R.h, R.border, R.bw, R.filled, R.fill);
+		for (const auto& R : rects)
+			framebuffer.DrawRect(R.x, R.y, R.w, R.h, R.border, R.bw, R.filled, R.fill);
 
-	for (const auto& T : tris)
-		framebuffer.DrawTriangle(T.p0, T.p1, T.p2, T.border, T.filled, T.fill);
+		for (const auto& T : tris)
+			framebuffer.DrawTriangle(T.p0, T.p1, T.p2, T.border, T.filled, T.fill);
 
-	framebuffer.DrawRect(0, 0, framebuffer.width, toolbarH, Color(60,60,60), 1, true, Color(60,60,60));
-	for (const Button& b : buttons)
-		b.Render(framebuffer);
+		framebuffer.DrawRect(0, 0, framebuffer.width, toolbarH, Color(60,60,60), 1, true, Color(60,60,60));
+
+		for (const Button& b : buttons)
+			b.Render(framebuffer);
+
+		if (isPlacing) {
+			Color previewColor = Color::WHITE;
+			if (currentTool == Tool::RECT) {
+				int w = mouse_position.x - startPos.x;
+				int h = mouse_position.y - startPos.y;
+				framebuffer.DrawRect(startPos.x, startPos.y, w, h, previewColor, borderWidth, isFilled, Color::BLUE);
+			}
+			else if (currentTool == Tool::LINE) {
+				framebuffer.DrawLineDDA(startPos.x, startPos.y, mouse_position.x, mouse_position.y, previewColor);
+			}
+		}
+
+		framebuffer.DrawRect(0, 0, framebuffer.width, toolbarH, Color(60, 60, 60), 1, true, Color(60, 60, 60));
+
+		for (const Button& b : buttons)
+			b.Render(&framebuffer); 
+	}
+	else if (currentMode == AppMode::ANIMATION) {
+		particleSystem.Render(&framebuffer);
+	}
 		
 	framebuffer.Render();
 }
 
 void Application::Update(float seconds_elapsed)
-{	;
+{
+	if (currentMode == AppMode::ANIMATION) {
+		particleSystem.Update(dt);
+	}
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
 	switch(event.keysym.sym) {
 		case SDLK_ESCAPE: exit(0); break;
+
+		case SDLK_1:
+			currentMode = AppMode::PAINT; 
+			break;
+
+		case SDLK_2:
+			currentMode = AppMode::ANIMATION;
+			break;
+
+		case SDLK_f:
+			isFilled = !isFilled; 
+			break;
 
 		case SDLK_PLUS:
 			borderWidth++;

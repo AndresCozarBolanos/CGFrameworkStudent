@@ -10,6 +10,7 @@
 #include "framework.h"
 #include "image.h"
 #include "button.h"
+#include "ParticleSystem.h"
 
 class Application
 {
@@ -75,6 +76,13 @@ public:
 
 	std::vector<Button> buttons; // list of toolbar buttons
 	int toolbarH = 50;
+
+	// ====== Estados globales de la App ======
+	enum class AppMode { PAINT, ANIMATION };
+	AppMode currentMode = AppMode::PAINT; // Inicia en modo pintura
+
+	bool isFilled = false; // Controla la tecla 'F'
+	ParticleSystem particleSystem; /
 
 	// Constructor and main methods
 	Application(const char* caption, int width, int height);

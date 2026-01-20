@@ -1,7 +1,7 @@
 #pragma once
 
 #include "image.h"
-#include "utils.h"  
+#include "utils.h"
 
 enum class ButtonType
 {
@@ -10,11 +10,11 @@ enum class ButtonType
     LOAD,
     SAVE,
 
-    // Herramientas
+    // Tools
+    PENCIL,
     ERASER,
     LINE,
     RECTANGLE,
-    CIRCLE,
     TRIANGLE,
 
     // Colors
@@ -25,6 +25,7 @@ enum class ButtonType
     COLOR_RED,
     COLOR_BLUE,
     COLOR_CYAN,
+    COLOR_GREEN
 };
 
 class Button

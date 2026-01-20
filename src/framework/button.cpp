@@ -1,6 +1,5 @@
 #include "button.h"
 
-// Constructor
 Button::Button(const Image& img, const Vector2& p, ButtonType t)
 {
     icon = img;

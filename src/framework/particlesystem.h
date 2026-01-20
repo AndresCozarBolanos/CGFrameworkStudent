@@ -1,5 +1,6 @@
 #pragma once
 #include "framework.h"
+#include "image.h"
 
 class ParticleSystem {
 
@@ -7,16 +8,24 @@ class ParticleSystem {
 
     struct Particle {
         Vector2 position;
-        Vector2 velocity; // Normalized speed and direction of the particle
+        Vector2 velocity;
         Color color;
         float acceleration;
-        float ttl; // Time left until the particle expires
-        bool inactive; // Particle is not used/expired, so it can be recreated
+        float ttl;
+        bool inactive;
     };
 
     Particle particles[MAX_PARTICLES];
 
+    int screenW = 800;
+    int screenH = 600;
+
+    int spawnPerSecond = 200;     // ajusta (100..400 típico)
+    float spawnAccumulator = 0.0f;
+
+
 public:
+    void SetSize(int w, int h) { screenW = w; screenH = h; }
     void Init();
     void Render(Image* framebuffer);
     void Update(float dt);

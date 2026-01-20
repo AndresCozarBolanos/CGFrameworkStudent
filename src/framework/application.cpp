@@ -122,7 +122,7 @@ void Application::Render(void)
 void Application::Update(float seconds_elapsed)
 {
 	if (currentMode == AppMode::ANIMATION) {
-		particleSystem.Update(dt);
+		particleSystem.Update(seconds_elapsed);
 	}
 }
 

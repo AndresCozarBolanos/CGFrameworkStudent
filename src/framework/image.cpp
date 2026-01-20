@@ -490,7 +490,7 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
 
     if (isFilled) {
         for (int y = 0; y < (int)this->height; ++y) {
-            if (table[y].size() < 2u) continue;
+            if (table[y].size() < 2) continue;
 
             std::sort(table[y].begin(), table[y].end());
 

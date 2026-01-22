@@ -20,7 +20,7 @@ class ParticleSystem {
     int screenW = 800;
     int screenH = 600;
 
-    int spawnPerSecond = 200;     // ajusta (100..400 típico)
+    int spawnPerSecond = 200;    
     float spawnAccumulator = 0.0f;
 
 

@@ -103,13 +103,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_1: showAnimation = false; break;
         case SDLK_2: showAnimation = true;  break;
 
-        case SDLK_UP:
-            if (currentTool==Tool::PENCIL || currentTool==Tool::ERASER) brushSize++;
-            break;
-        case SDLK_DOWN:
-            brushSize = std::max(1, brushSize-1);
-            break;
-
         case SDLK_PLUS:
         case SDLK_KP_PLUS:
             borderWidth++;

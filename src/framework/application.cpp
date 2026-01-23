@@ -27,8 +27,10 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
+    // Create buttons list
     buttons.clear();
 
+    // Load all button images
     Image imgClear;   imgClear.LoadPNG("../res/images/clear.png");
     Image imgLoad;    imgLoad.LoadPNG("../res/images/load.png");
     Image imgSave;    imgSave.LoadPNG("../res/images/save.png");
@@ -48,8 +50,10 @@ void Application::Init()
     Image imgCyan;    imgCyan.LoadPNG("../res/images/cyan.png");
     Image imgGreen;   imgGreen.LoadPNG("../res/images/green.png");
 
+    // x and y axis original displacing and spacing
     int x = 10, y = 10, s = 6;
 
+    // Load buttons into the list with their positions and images
     buttons.push_back(Button(imgClear,  Vector2((float)x, (float)y), ButtonType::CLEAR)); x += imgClear.width + s;
     buttons.push_back(Button(imgLoad,   Vector2((float)x, (float)y), ButtonType::LOAD));  x += imgLoad.width + s;
     buttons.push_back(Button(imgSave,   Vector2((float)x, (float)y), ButtonType::SAVE));  x += imgSave.width + 4*s;
@@ -69,8 +73,10 @@ void Application::Init()
     buttons.push_back(Button(imgCyan,   Vector2((float)x, (float)y), ButtonType::COLOR_CYAN));   x += imgCyan.width + s;
     buttons.push_back(Button(imgGreen,  Vector2((float)x, (float)y), ButtonType::COLOR_GREEN));
 
+    // Create blank canvas
     canvas.Fill(backgroundColor);
 
+    // Set initial mode
     particlesMode = false;
 }
 

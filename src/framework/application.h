@@ -44,7 +44,6 @@ public:
     bool isFilled = false;
 
     int borderWidth = 1;
-    int brushSize = 1;
 
     // UI
     std::vector<Button> buttons;
@@ -52,7 +51,7 @@ public:
 
     // Particles
     ParticleSystem ps;
-    bool showAnimation = false;
+    bool particlesMode = false;
 
     Application(const char* caption, int width, int height);
     ~Application();

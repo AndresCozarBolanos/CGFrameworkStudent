@@ -3,6 +3,7 @@
 #include "shader.h"
 #include <algorithm>
 
+// Constructor
 Application::Application(const char* caption, int width, int height)
 {
     window = createWindow(caption, width, height);
@@ -20,8 +21,10 @@ Application::Application(const char* caption, int width, int height)
     canvas.Fill(backgroundColor);
 }
 
+// Destructor
 Application::~Application() {}
 
+// Initialization
 void Application::Init()
 {
     buttons.clear();
@@ -29,6 +32,7 @@ void Application::Init()
     Image imgClear;   imgClear.LoadPNG("../res/images/clear.png");
     Image imgLoad;    imgLoad.LoadPNG("../res/images/load.png");
     Image imgSave;    imgSave.LoadPNG("../res/images/save.png");
+
     Image imgPencil;  imgPencil.LoadPNG("../res/images/pencil.png");
     Image imgEraser;  imgEraser.LoadPNG("../res/images/eraser.png");
     Image imgLine;    imgLine.LoadPNG("../res/images/line.png");
@@ -47,50 +51,51 @@ void Application::Init()
     int x = 10, y = 10, s = 6;
 
     buttons.push_back(Button(imgClear,  Vector2((float)x, (float)y), ButtonType::CLEAR)); x += imgClear.width + s;
-buttons.push_back(Button(imgLoad,   Vector2((float)x, (float)y), ButtonType::LOAD));  x += imgLoad.width + s;
-buttons.push_back(Button(imgSave,   Vector2((float)x, (float)y), ButtonType::SAVE));  x += imgSave.width + 4*s;
+    buttons.push_back(Button(imgLoad,   Vector2((float)x, (float)y), ButtonType::LOAD));  x += imgLoad.width + s;
+    buttons.push_back(Button(imgSave,   Vector2((float)x, (float)y), ButtonType::SAVE));  x += imgSave.width + 4*s;
 
-buttons.push_back(Button(imgPencil, Vector2((float)x, (float)y), ButtonType::PENCIL)); x += imgPencil.width + s;
-buttons.push_back(Button(imgEraser, Vector2((float)x, (float)y), ButtonType::ERASER)); x += imgEraser.width + s;
-buttons.push_back(Button(imgLine,   Vector2((float)x, (float)y), ButtonType::LINE));   x += imgLine.width + s;
-buttons.push_back(Button(imgRect,   Vector2((float)x, (float)y), ButtonType::RECTANGLE)); x += imgRect.width + s;
-buttons.push_back(Button(imgTri,    Vector2((float)x, (float)y), ButtonType::TRIANGLE));  x += imgTri.width + 4*s;
+    buttons.push_back(Button(imgPencil, Vector2((float)x, (float)y), ButtonType::PENCIL)); x += imgPencil.width + s;
+    buttons.push_back(Button(imgEraser, Vector2((float)x, (float)y), ButtonType::ERASER)); x += imgEraser.width + s;
+    buttons.push_back(Button(imgLine,   Vector2((float)x, (float)y), ButtonType::LINE));   x += imgLine.width + s;
+    buttons.push_back(Button(imgRect,   Vector2((float)x, (float)y), ButtonType::RECTANGLE)); x += imgRect.width + s;
+    buttons.push_back(Button(imgTri,    Vector2((float)x, (float)y), ButtonType::TRIANGLE));  x += imgTri.width + 4*s;
 
-buttons.push_back(Button(imgBlack,  Vector2((float)x, (float)y), ButtonType::COLOR_BLACK));  x += imgBlack.width + s;
-buttons.push_back(Button(imgWhite,  Vector2((float)x, (float)y), ButtonType::COLOR_WHITE));  x += imgWhite.width + s;
-buttons.push_back(Button(imgPink,   Vector2((float)x, (float)y), ButtonType::COLOR_PINK));   x += imgPink.width + s;
-buttons.push_back(Button(imgYellow, Vector2((float)x, (float)y), ButtonType::COLOR_YELLOW)); x += imgYellow.width + s;
-buttons.push_back(Button(imgRed,    Vector2((float)x, (float)y), ButtonType::COLOR_RED));    x += imgRed.width + s;
-buttons.push_back(Button(imgBlue,   Vector2((float)x, (float)y), ButtonType::COLOR_BLUE));   x += imgBlue.width + s;
-buttons.push_back(Button(imgCyan,   Vector2((float)x, (float)y), ButtonType::COLOR_CYAN));   x += imgCyan.width + s;
-buttons.push_back(Button(imgGreen,  Vector2((float)x, (float)y), ButtonType::COLOR_GREEN));
+    buttons.push_back(Button(imgBlack,  Vector2((float)x, (float)y), ButtonType::COLOR_BLACK));  x += imgBlack.width + s;
+    buttons.push_back(Button(imgWhite,  Vector2((float)x, (float)y), ButtonType::COLOR_WHITE));  x += imgWhite.width + s;
+    buttons.push_back(Button(imgPink,   Vector2((float)x, (float)y), ButtonType::COLOR_PINK));   x += imgPink.width + s;
+    buttons.push_back(Button(imgYellow, Vector2((float)x, (float)y), ButtonType::COLOR_YELLOW)); x += imgYellow.width + s;
+    buttons.push_back(Button(imgRed,    Vector2((float)x, (float)y), ButtonType::COLOR_RED));    x += imgRed.width + s;
+    buttons.push_back(Button(imgBlue,   Vector2((float)x, (float)y), ButtonType::COLOR_BLUE));   x += imgBlue.width + s;
+    buttons.push_back(Button(imgCyan,   Vector2((float)x, (float)y), ButtonType::COLOR_CYAN));   x += imgCyan.width + s;
+    buttons.push_back(Button(imgGreen,  Vector2((float)x, (float)y), ButtonType::COLOR_GREEN));
 
     canvas.Fill(backgroundColor);
 
-    showAnimation = false;
+    particlesMode = false;
 }
 
 void Application::Render()
 {
-    if (showAnimation)
+    // Particles mode
+    if (particlesMode)
     {
-        framebuffer.Fill(Color::BLACK);
-        ps.Render(&framebuffer);
-        framebuffer.Render();
+        framebuffer.Fill(backgroundColor); // Fill the framebuffer
+        ps.Render(&framebuffer); // Render particles
+        framebuffer.Render(); // Show
         return;
     }
-
+    // Paint mode
     framebuffer.DrawImage(canvas, 0, 0);
-
+    // Draw toolbar
     framebuffer.DrawRect(0,0,framebuffer.width,toolbarH,Color(60,60,60),1,true,Color(60,60,60));
     for (const Button& b : buttons) b.Render(framebuffer);
 
-    framebuffer.Render();
+    framebuffer.Render(); // Show
 }
 
 void Application::Update(float dt)
 {
-    if (showAnimation)
+    if (particlesMode)
         ps.Update(dt);
 }
 
@@ -100,8 +105,8 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     {
         case SDLK_ESCAPE: exit(0);
 
-        case SDLK_1: showAnimation = false; break;
-        case SDLK_2: showAnimation = true;  break;
+        case SDLK_1: particlesMode = false; break;
+        case SDLK_2: particlesMode = true;  break;
 
         case SDLK_PLUS:
         case SDLK_KP_PLUS:
@@ -150,7 +155,7 @@ void Application::OnMouseButtonDown(SDL_MouseButtonEvent event)
         if (b.type==ButtonType::COLOR_BLUE) currentColor=Color::BLUE;
         if (b.type==ButtonType::COLOR_CYAN) currentColor=Color::CYAN;
         if (b.type==ButtonType::COLOR_YELLOW) currentColor=Color::YELLOW;
-        if (b.type==ButtonType::COLOR_PINK) currentColor=Color(255,105,180);
+        if (b.type==ButtonType::COLOR_PINK) currentColor=Color::PURPLE;
         if (b.type==ButtonType::COLOR_GREEN) currentColor=Color::GREEN;
 
         return;
@@ -212,14 +217,18 @@ void Application::OnMouseMove(SDL_MouseButtonEvent)
 
     if (isDrawing)
     {
-        Color c = (currentTool==Tool::ERASER)?backgroundColor:currentColor;
-        int r=brushSize/2;
-        for(int j=-r;j<=r;++j)
-            for(int i=-r;i<=r;++i)
-                canvas.SetPixel((unsigned int)mouse_position.x+i,(unsigned int)mouse_position.y+j,c);
+        if (isDrawing)
+        {
+            Color c = (currentTool==Tool::ERASER) ? backgroundColor : currentColor;
 
-        canvas.DrawLineDDA((int)prevPos.x,(int)prevPos.y,(int)mouse_position.x,(int)mouse_position.y,c);
-        prevPos=mouse_position;
+            canvas.SetPixel((unsigned int)mouse_position.x, (unsigned int)mouse_position.y, c);
+
+            canvas.DrawLineDDA((int)prevPos.x, (int)prevPos.y,
+                            (int)mouse_position.x, (int)mouse_position.y, c);
+
+            prevPos = mouse_position;
+        }
+
     }
 }
 

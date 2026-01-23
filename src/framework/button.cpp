@@ -1,5 +1,6 @@
 #include "button.h"
 
+// Button constructor
 Button::Button(const Image& img, const Vector2& p, ButtonType t)
 {
     icon = img;
@@ -9,11 +10,12 @@ Button::Button(const Image& img, const Vector2& p, ButtonType t)
 
 bool Button::IsMouseInside(const Vector2& m) const
 {
+    // Check if it is button bounds
     return (m.x >= pos.x && m.x < pos.x + icon.width &&
             m.y >= pos.y && m.y < pos.y + icon.height);
 }
 
 void Button::Render(Image& framebuffer) const
-{
+{   
     framebuffer.DrawImage(icon, (int)pos.x, (int)pos.y);
 }

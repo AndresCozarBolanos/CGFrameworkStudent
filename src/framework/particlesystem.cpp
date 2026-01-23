@@ -20,7 +20,7 @@ static void SpawnParticle(ParticleSystem::Particle& p, int screenW, int screenH)
         frand((float)(screenH - 1 - 20), (float)(screenH - 1))
     );
 
-    // velocity upwards (your original)
+    // velocity
     p.velocity = Vector2(
         frand(-15.0f, 15.0f),
         -frand(40.0f, 120.0f)

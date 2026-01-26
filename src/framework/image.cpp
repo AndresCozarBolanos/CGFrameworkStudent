@@ -463,7 +463,7 @@ void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table)
     float x_inc = dx / steps;
     float y_inc = dy / steps;
 
-    float x = float(x0);
+    float x = float(x0);	
     float y = float(y0);
 
 	// Finally, we compute the points and store them in the table

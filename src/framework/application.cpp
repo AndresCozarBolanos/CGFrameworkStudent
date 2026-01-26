@@ -223,19 +223,16 @@ void Application::OnMouseMove(SDL_MouseButtonEvent)
 
     if (isDrawing)
     {
-        if (isDrawing)
-        {
-            Color c = (currentTool==Tool::ERASER) ? backgroundColor : currentColor;
+        Color c = (currentTool==Tool::ERASER) ? backgroundColor : currentColor;
 
-            canvas.SetPixel((unsigned int)mouse_position.x, (unsigned int)mouse_position.y, c);
+        canvas.SetPixel((unsigned int)mouse_position.x, (unsigned int)mouse_position.y, c);
 
-            canvas.DrawLineDDA((int)prevPos.x, (int)prevPos.y,
-                            (int)mouse_position.x, (int)mouse_position.y, c);
+        canvas.DrawLineDDA((int)prevPos.x, (int)prevPos.y,
+                        (int)mouse_position.x, (int)mouse_position.y, c);
 
-            prevPos = mouse_position;
-        }
-
+        prevPos = mouse_position;
     }
+
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent){}

@@ -28,7 +28,7 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-	Mesh* m = new Mesh();
+	Mesh* mesh = new Mesh();
 	mesh->LoadOBJ("meshes/lee.obj");
 }
 

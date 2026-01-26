@@ -2,10 +2,13 @@
 #include "utils.h"
 #include "camera.h"
 
-Entity::Entity(){
+Entity::Entity()
+{
+	this->mesh.Clear();
+	this->model.SetIdentity();
 }
 
 void Entity::render() 
 {
-	if (mesh) {}
+	this->mesh.Render();
 }

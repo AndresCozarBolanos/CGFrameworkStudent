@@ -401,6 +401,7 @@ void FloatImage::Resize(unsigned int width, unsigned int height)
 // Draws lines using the DDA algorithm
 void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 
+	// We calculate the slope and determine the number of steps needed
 	float dx = float(x1) - float(x0);
     float dy = float(y1) - float(y0);
 	float steps = std::max(std::abs(dx), std::abs(dy));
@@ -410,12 +411,14 @@ void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 		return;
 	}
 
+	// Then we calculate the increment in x & y for each step
 	float x_inc = dx / steps;
 	float y_inc = dy / steps;
 
 	float x = float(x0);
     float y = float(y0);
 
+	// Finally, we generate the line
 	for (int i = 0; i <= steps; i++) {
 		SetPixel(int(std::round(x)), int(std::round(y)), c);
 		x += x_inc;
@@ -423,11 +426,11 @@ void Image::DrawLineDDA(int x0, int y0, int x1, int y1, const Color& c){
 	}
 }
 
-// Draws a rectangle with a border of a specific width and fills it
+// Draws a rectangle with a border of a specific width and fills it if required
 void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,
 	int borderWidth, bool isFilled, const Color& fillColor){
 	
-	if (isFilled) {
+	if (isFilled) { // If needed, fill the rectangle
 		for (int i = y; i < y + h; i++) {
 			for (int j = x; j < x + w; j++) {
 				SetPixel(j, i, fillColor);
@@ -435,39 +438,40 @@ void Image::DrawRect(int x, int y, int w, int h, const Color& borderColor,
 		}
 	}
 	
+	// We draw the border with the desired width
 	for (int i = 0; i < borderWidth; i++) {
-		for (int j = x; j < x + w; j++) {
-			SetPixel(j, y + i, borderColor);
-		}for (int j = x; j < x + w; j++) {
-			SetPixel(j, y + h - 1 - i, borderColor);
-		}for (int j = y; j < y + h; j++) {
-			SetPixel(x + i, j, borderColor);
-		}for (int j = y; j < y + h; j++) {
-			SetPixel(x + w - 1 - i, j, borderColor);
+		for (int j = x; j < x + w; j++) { 
+			SetPixel(j, y + i, borderColor); // Bottom border 
+			SetPixel(j, y + h - 1 - i, borderColor); // Top border
+		}for (int j = y; j < y + h; j++) { 
+			SetPixel(x + i, j, borderColor); // Left border
+			SetPixel(x + w - 1 - i, j, borderColor);// Right border
 		}
 	}
 }
 
 void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table) {
     
+	// We calculate the slope and determine the number of steps needed
 	float dx = float(x1) - float(x0);
     float dy = float(y1) - float(y0);
     float steps = std::max(std::abs(dx), std::abs(dy));
-    if (steps == 0.0f) return;
 
+    if (steps == 0) return;
+
+	// Then we calculate the increment in x & y for each step
     float x_inc = dx / steps;
     float y_inc = dy / steps;
 
-    float x = float(x0);
+    float x = float(x0);	
     float y = float(y0);
 
+	// Finally, we compute the points and store them in the table
     for (int i = 0; i <= steps; i++) {
         int ix = int(std::round(x));
         int iy = int(std::round(y));
         
-        if (iy >= 0 && iy < int(this->height)) {
-            table[iy].push_back(ix);
-        }
+		table[iy].push_back(ix); // Store the x coordinate in the corresponding row (y)
         
         x += x_inc;
         y += y_inc;
@@ -478,20 +482,23 @@ void Image::ScanLineDDA(int x0, int y0, int x1, int y1, std::vector<int>* table)
 void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2,
     const Color& borderColor, bool isFilled, const Color& fillColor)
 {
+	// Normalization
     int x0 = (int)std::round(p0.x), y0 = (int)std::round(p0.y);
     int x1 = (int)std::round(p1.x), y1 = (int)std::round(p1.y);
     int x2 = (int)std::round(p2.x), y2 = (int)std::round(p2.y);
 
+	// We create the edge table
     std::vector<int>* table = new std::vector<int>[this->height];
-
     ScanLineDDA(x0, y0, x1, y1, table);
     ScanLineDDA(x1, y1, x2, y2, table);
     ScanLineDDA(x2, y2, x0, y0, table);
 
-    if (isFilled) {
+    if (isFilled) { // if needed, fill the triangle
         for (int y = 0; y < (int)this->height; ++y) {
+			// Frist we check if it is inside the triangle
             if (table[y].size() < 2) continue;
 
+			// Then we sort the it coordinates and fill
             std::sort(table[y].begin(), table[y].end());
 
             int minX = table[y].front();
@@ -503,6 +510,7 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
         }
     }
 
+	// Finally, we draw the triangle border
     DrawLineDDA(x0, y0, x1, y1, borderColor);
     DrawLineDDA(x1, y1, x2, y2, borderColor);
     DrawLineDDA(x2, y2, x0, y0, borderColor);
@@ -513,19 +521,10 @@ void Image::DrawTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2
 
 void Image::DrawImage(const Image& src, int x, int y)
 {
+	// We copy every pixel of the image
     for (int j = 0; j < (int)src.height; ++j)
-    {
-        int dstY = y + j;
-        if (dstY < 0 || dstY >= (int)this->height) continue;
-
         for (int i = 0; i < (int)src.width; ++i)
-        {
-            int dstX = x + i;
-            if (dstX < 0 || dstX >= (int)this->width) continue;
-
-            Color c = src.GetPixel(i, j);
-            this->SetPixel(dstX, dstY, c);
-        }
-    }
+            SetPixel(x + i, y + j, src.GetPixel(i, j));
 }
+
 

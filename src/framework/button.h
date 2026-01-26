@@ -35,9 +35,7 @@ public:
     Vector2 pos;
     ButtonType type;
 
-    Button() = default;
     Button(const Image& img, const Vector2& p, ButtonType t);
-
     bool IsMouseInside(const Vector2& mousePosition) const;
     void Render(Image& framebuffer) const;
 };

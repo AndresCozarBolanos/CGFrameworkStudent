@@ -4,6 +4,7 @@
 #include "entity.h"
 #include <algorithm>
 
+// Constructor
 Application::Application(const char* caption, int width, int height)
 {
     window = createWindow(caption, width, height);
@@ -21,12 +22,17 @@ Application::Application(const char* caption, int width, int height)
     canvas.Fill(backgroundColor);
 }
 
+// Destructor
 Application::~Application() {}
 
+// Initialization
 void Application::Init()
 {
+<<<<<<< HEAD
 	Mesh* m = new Mesh();
 	mesh->LoadOBJ("meshes/lee.obj");
+=======
+
 }
 
 void Application::Render()
@@ -36,7 +42,7 @@ void Application::Render()
 
 void Application::Update(float dt)
 {
-    if (showAnimation)
+    if (particlesMode)
         ps.Update(dt);
 }
 
@@ -46,8 +52,8 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     {
         case SDLK_ESCAPE: exit(0);
 
-        case SDLK_1: showAnimation = false; break;
-        case SDLK_2: showAnimation = true;  break;
+        case SDLK_1: particlesMode = false; break;
+        case SDLK_2: particlesMode = true;  break;
 
         case SDLK_PLUS:
         case SDLK_KP_PLUS:
@@ -96,7 +102,7 @@ void Application::OnMouseButtonDown(SDL_MouseButtonEvent event)
         if (b.type==ButtonType::COLOR_BLUE) currentColor=Color::BLUE;
         if (b.type==ButtonType::COLOR_CYAN) currentColor=Color::CYAN;
         if (b.type==ButtonType::COLOR_YELLOW) currentColor=Color::YELLOW;
-        if (b.type==ButtonType::COLOR_PINK) currentColor=Color(255,105,180);
+        if (b.type==ButtonType::COLOR_PINK) currentColor=Color::PURPLE;
         if (b.type==ButtonType::COLOR_GREEN) currentColor=Color::GREEN;
 
         return;
@@ -158,15 +164,16 @@ void Application::OnMouseMove(SDL_MouseButtonEvent)
 
     if (isDrawing)
     {
-        Color c = (currentTool==Tool::ERASER)?backgroundColor:currentColor;
-        int r=brushSize/2;
-        for(int j=-r;j<=r;++j)
-            for(int i=-r;i<=r;++i)
-                canvas.SetPixel((unsigned int)mouse_position.x+i,(unsigned int)mouse_position.y+j,c);
+        Color c = (currentTool==Tool::ERASER) ? backgroundColor : currentColor;
 
-        canvas.DrawLineDDA((int)prevPos.x,(int)prevPos.y,(int)mouse_position.x,(int)mouse_position.y,c);
-        prevPos=mouse_position;
+        canvas.SetPixel((unsigned int)mouse_position.x, (unsigned int)mouse_position.y, c);
+
+        canvas.DrawLineDDA((int)prevPos.x, (int)prevPos.y,
+                        (int)mouse_position.x, (int)mouse_position.y, c);
+
+        prevPos = mouse_position;
     }
+
 }
 
 void Application::OnWheel(SDL_MouseWheelEvent){}

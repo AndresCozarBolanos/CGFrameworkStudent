@@ -1,6 +1,7 @@
 #include "application.h"
 #include "mesh.h"
 #include "shader.h"
+#include "entity.h"
 #include <algorithm>
 
 // Constructor
@@ -27,76 +28,13 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-    // Create buttons list
-    buttons.clear();
-
-    // Load all button images
-    Image imgClear;   imgClear.LoadPNG("../res/images/clear.png");
-    Image imgLoad;    imgLoad.LoadPNG("../res/images/load.png");
-    Image imgSave;    imgSave.LoadPNG("../res/images/save.png");
-
-    Image imgPencil;  imgPencil.LoadPNG("../res/images/pencil.png");
-    Image imgEraser;  imgEraser.LoadPNG("../res/images/eraser.png");
-    Image imgLine;    imgLine.LoadPNG("../res/images/line.png");
-    Image imgRect;    imgRect.LoadPNG("../res/images/rectangle.png");
-    Image imgTri;     imgTri.LoadPNG("../res/images/triangle.png");
-
-    Image imgBlack;   imgBlack.LoadPNG("../res/images/black.png");
-    Image imgWhite;   imgWhite.LoadPNG("../res/images/white.png");
-    Image imgPink;    imgPink.LoadPNG("../res/images/pink.png");
-    Image imgYellow;  imgYellow.LoadPNG("../res/images/yellow.png");
-    Image imgRed;     imgRed.LoadPNG("../res/images/red.png");
-    Image imgBlue;    imgBlue.LoadPNG("../res/images/blue.png");
-    Image imgCyan;    imgCyan.LoadPNG("../res/images/cyan.png");
-    Image imgGreen;   imgGreen.LoadPNG("../res/images/green.png");
-
-    // x and y axis original displacing and spacing
-    int x = 10, y = 10, s = 6;
-
-    // Load buttons into the list with their positions and images
-    buttons.push_back(Button(imgClear,  Vector2((float)x, (float)y), ButtonType::CLEAR)); x += imgClear.width + s;
-    buttons.push_back(Button(imgLoad,   Vector2((float)x, (float)y), ButtonType::LOAD));  x += imgLoad.width + s;
-    buttons.push_back(Button(imgSave,   Vector2((float)x, (float)y), ButtonType::SAVE));  x += imgSave.width + 4*s;
-
-    buttons.push_back(Button(imgPencil, Vector2((float)x, (float)y), ButtonType::PENCIL)); x += imgPencil.width + s;
-    buttons.push_back(Button(imgEraser, Vector2((float)x, (float)y), ButtonType::ERASER)); x += imgEraser.width + s;
-    buttons.push_back(Button(imgLine,   Vector2((float)x, (float)y), ButtonType::LINE));   x += imgLine.width + s;
-    buttons.push_back(Button(imgRect,   Vector2((float)x, (float)y), ButtonType::RECTANGLE)); x += imgRect.width + s;
-    buttons.push_back(Button(imgTri,    Vector2((float)x, (float)y), ButtonType::TRIANGLE));  x += imgTri.width + 4*s;
-
-    buttons.push_back(Button(imgBlack,  Vector2((float)x, (float)y), ButtonType::COLOR_BLACK));  x += imgBlack.width + s;
-    buttons.push_back(Button(imgWhite,  Vector2((float)x, (float)y), ButtonType::COLOR_WHITE));  x += imgWhite.width + s;
-    buttons.push_back(Button(imgPink,   Vector2((float)x, (float)y), ButtonType::COLOR_PINK));   x += imgPink.width + s;
-    buttons.push_back(Button(imgYellow, Vector2((float)x, (float)y), ButtonType::COLOR_YELLOW)); x += imgYellow.width + s;
-    buttons.push_back(Button(imgRed,    Vector2((float)x, (float)y), ButtonType::COLOR_RED));    x += imgRed.width + s;
-    buttons.push_back(Button(imgBlue,   Vector2((float)x, (float)y), ButtonType::COLOR_BLUE));   x += imgBlue.width + s;
-    buttons.push_back(Button(imgCyan,   Vector2((float)x, (float)y), ButtonType::COLOR_CYAN));   x += imgCyan.width + s;
-    buttons.push_back(Button(imgGreen,  Vector2((float)x, (float)y), ButtonType::COLOR_GREEN));
-
-    // Create blank canvas
-    canvas.Fill(backgroundColor);
-
-    // Set initial mode
-    particlesMode = false;
+    Mesh* mesh = new Mesh();
+    mesh->LoadOBJ("meshes/lee.obj");
 }
 
 void Application::Render()
 {
-    // Particles mode
-    if (particlesMode)
-    {
-        framebuffer.Fill(backgroundColor); // Fill the framebuffer
-        ps.Render(&framebuffer); // Render particles
-        framebuffer.Render(); // Show
-        return;
-    }
-    // Paint mode
-    framebuffer.DrawImage(canvas, 0, 0);
-    // Draw toolbar
-    framebuffer.DrawRect(0,0,framebuffer.width,toolbarH,Color(60,60,60),1,true,Color(60,60,60));
-    for (const Button& b : buttons) b.Render(framebuffer);
 
-    framebuffer.Render(); // Show
 }
 
 void Application::Update(float dt)

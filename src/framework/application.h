@@ -6,6 +6,7 @@
 #include "image.h"
 #include "button.h"
 #include "particlesystem.h"
+#include "entity.h"
 
 class Application
 {

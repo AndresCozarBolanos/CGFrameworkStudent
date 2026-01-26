@@ -28,11 +28,8 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-<<<<<<< HEAD
 	Mesh* m = new Mesh();
 	mesh->LoadOBJ("meshes/lee.obj");
-=======
-
 }
 
 void Application::Render()

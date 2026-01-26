@@ -5,6 +5,7 @@ Entity::Entity()
 {
     this->model.SetIdentity();
     this->mesh.Clear();
+    
 }
 
 void Entity::Render()

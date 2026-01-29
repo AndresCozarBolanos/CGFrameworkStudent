@@ -28,19 +28,33 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-    Mesh* mesh = new Mesh();
-    mesh->LoadOBJ("meshes/lee.obj");
+    camera = new Camera();
+    camera->LookAt(Vector3(0, 20, 50), Vector3(0, 5, 0), Vector3(0, 1, 0));
+    camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f); 
+
+    
+	Mesh* mesh = new Mesh();
+	mesh->LoadOBJ("meshes/lee.obj");
+
+    Matrix44 m;
+    m.SetIdentity();
+    entity = new Entity(mesh, m);
 }
 
 void Application::Render()
 {
-
+    framebuffer.Fill(Color::BLACK);
+    framebuffer.DrawImage(canvas, 0, 0);
+    if (entity) {
+        entity->Render(&framebuffer, camera, Color::WHITE);
+    }
+    framebuffer.Render();
 }
 
 void Application::Update(float dt)
 {
-    if (particlesMode)
-        ps.Update(dt);
+    camera->UpdateViewMatrix();
+    camera->UpdateProjectionMatrix();
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)

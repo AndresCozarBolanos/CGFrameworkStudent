@@ -6,8 +6,8 @@ class Entity
 {
 public:
 	Mesh mesh;
-	matrix44 model;
+	Matrix44 model;
 
-	Entity();
-	void render();
+	Entity(Mesh* m, Matrix44 ma);
+	void Render(Image* framebuffer, Camera* camera, const Color& c);
 };

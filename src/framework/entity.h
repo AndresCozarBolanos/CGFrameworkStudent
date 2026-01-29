@@ -1,11 +1,12 @@
 #pragma once
 #include "mesh.h"
 #include "framework.h"
+#include "image.h"
 
 class Entity
 {
 public:
-	Mesh mesh;
+	Mesh* mesh;
 	Matrix44 model;
 
 	Entity(Mesh* m, Matrix44 ma);

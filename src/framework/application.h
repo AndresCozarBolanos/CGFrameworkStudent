@@ -23,6 +23,9 @@ public:
     Vector2 mouse_position;
     Vector2 mouse_delta;
 
+    Entity* entity = nullptr;
+    Camera* camera = nullptr;
+
     // Framebuffer
     Image framebuffer;
     Image canvas;

@@ -2,13 +2,13 @@
 #include "utils.h"
 #include "camera.h"
 
-Entity::Entity(Mesh* m, Matrix44 ma);
+Entity::Entity(Mesh* m, Matrix44 ma)
 {
 	this->mesh = m;
-	this->modelMatrix = ma;
+	this->model = ma;
 }
 
-void Entity::Render(Image* framebuffer, Camera* camera, const Color& c);
+void Entity::Render(Image* framebuffer, Camera* camera, const Color& c)
 {
 	//Get mesh
 	Mesh* mesh = this->mesh;
@@ -23,14 +23,14 @@ void Entity::Render(Image* framebuffer, Camera* camera, const Color& c);
 		Vector3 v1 = mesh->GetVertices()[i + 1];
 		Vector3 v2 = mesh->GetVertices()[i + 2];
 
-		v0 = modelMatrix * v0;
-		v1 = modelMatrix * v1;
-		v2 = modelMatrix * v2;
+		v0 = model * v0;
+		v1 = model * v1;
+		v2 = model * v2;
 
 		//b. Project each of the world space vertices to clip space
-		v0 = camera->ProjectVector(v0);
-		v1 = camera->ProjectVector(v1);
-		v2 = camera->ProjectVector(v2);
+		Vector3 p0 = camera->ProjectVector(v0);
+		Vector3 p1 = camera->ProjectVector(v1);
+		Vector3 p2 = camera->ProjectVector(v2);
 
 		//c. Reject points outside the box
 		if (p0.x < -1 || p0.x > 1 || p0.y < -1 || p0.y > 1 || p0.z < -1 || p0.z > 1) continue;

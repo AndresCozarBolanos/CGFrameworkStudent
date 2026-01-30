@@ -6,7 +6,6 @@
 #include "image.h"
 #include "button.h"
 #include "particlesystem.h"
-#include "entity.h"
 
 class Application
 {
@@ -23,6 +22,9 @@ public:
     int mouse_state;
     Vector2 mouse_position;
     Vector2 mouse_delta;
+
+    Entity* entity = nullptr;
+    Camera* camera = nullptr;
 
     // Framebuffer
     Image framebuffer;

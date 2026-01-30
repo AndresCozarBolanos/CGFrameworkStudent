@@ -1,13 +1,14 @@
 #pragma once
-#include "framework.h"
 #include "mesh.h"
+#include "framework.h"
+#include "image.h"
 
 class Entity
 {
 public:
-    Mesh mesh;
-    Entity();
+	Mesh* mesh;
+	Matrix44 model;
 
-    Matrix44 model;
-    void Render();
+	Entity(Mesh* m, Matrix44 ma);
+	void Render(Image* framebuffer, Camera* camera, const Color& c);
 };

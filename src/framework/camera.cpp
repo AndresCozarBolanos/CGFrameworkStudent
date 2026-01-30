@@ -3,6 +3,27 @@
 #include "main/includes.h"
 #include <iostream>
 
+static inline float dot3(const Vector3& a, const Vector3& b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+static inline Vector3 cross3(const Vector3& a, const Vector3& b)
+{
+    return Vector3(
+        a.y*b.z - a.z*b.y,
+        a.z*b.x - a.x*b.z,
+        a.x*b.y - a.y*b.x
+    );
+}
+
+static inline Vector3 normalize3(const Vector3& v)
+{
+    float len = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
+    if (len <= 1e-8f) return Vector3(0,0,0);
+    return Vector3(v.x/len, v.y/len, v.z/len);
+}
+
 Camera::Camera()
 {
 	view_matrix.SetIdentity();
@@ -82,46 +103,78 @@ void Camera::LookAt(const Vector3& eye, const Vector3& center, const Vector3& up
 
 void Camera::UpdateViewMatrix()
 {
-	// Reset Matrix (Identity)
-	view_matrix.SetIdentity();
+    view_matrix.SetIdentity();
 
-	// Comment this line to create your own projection matrix!
-	SetExampleViewMatrix();
+    // Right-handed LookAt (estilo OpenGL)
+    Vector3 f = normalize3(center - eye);      // forward
+    Vector3 s = normalize3(cross3(f, up));     // right
+    Vector3 u = cross3(s, f);                  // true up
 
-	// Remember how to fill a Matrix4x4 (check framework slides)
-	// Careful with the order of matrix multiplications, and be sure to use normalized vectors!
-	
-	// Create the view matrix rotation
-	// ...
-	// view_matrix.M[3][3] = 1.0;
+    // OJO: llenamos la matriz para que sea consistente con OpenGL
+    // (y con que luego haces viewprojection = projection * view)
 
-	// Translate view matrix
-	// ...
+    view_matrix.M[0][0] =  s.x; view_matrix.M[1][0] =  s.y; view_matrix.M[2][0] =  s.z; view_matrix.M[3][0] = -dot3(s, eye);
+    view_matrix.M[0][1] =  u.x; view_matrix.M[1][1] =  u.y; view_matrix.M[2][1] =  u.z; view_matrix.M[3][1] = -dot3(u, eye);
+    view_matrix.M[0][2] = -f.x; view_matrix.M[1][2] = -f.y; view_matrix.M[2][2] = -f.z; view_matrix.M[3][2] =  dot3(f, eye);
+    view_matrix.M[0][3] = 0.0f; view_matrix.M[1][3] = 0.0f; view_matrix.M[2][3] = 0.0f; view_matrix.M[3][3] = 1.0f;
 
-	UpdateViewProjectionMatrix();
+    UpdateViewProjectionMatrix();
 }
+
 
 // Create a projection matrix
 void Camera::UpdateProjectionMatrix()
 {
-	// Reset Matrix (Identity)
-	projection_matrix.SetIdentity();
+    projection_matrix.SetIdentity();
 
-	// Comment this line to create your own projection matrix!
-	SetExampleProjectionMatrix();
+    if (type == PERSPECTIVE)
+    {
+        // fov está en grados. trig en radianes.
+        float fov_rad = fov * DEG2RAD;
+        float f = 1.0f / tanf(fov_rad * 0.5f);
 
-	// Remember how to fill a Matrix4x4 (check framework slides)
-	
-	if (type == PERSPECTIVE) {
-		// projection_matrix.M[2][3] = -1;
-		// ...
-	}
-	else if (type == ORTHOGRAPHIC) {
-		// ...
-	} 
+        float n = near_plane;
+        float fa = far_plane;
 
-	UpdateViewProjectionMatrix();
+        // OpenGL NDC z en [-1,1]
+        projection_matrix.M[0][0] = f / aspect;
+        projection_matrix.M[1][1] = f;
+
+        projection_matrix.M[2][2] = (fa + n) / (n - fa);
+        projection_matrix.M[2][3] = -1.0f;
+
+        projection_matrix.M[3][2] = (2.0f * fa * n) / (n - fa);
+        projection_matrix.M[3][3] = 0.0f;
+
+        // El resto ya está a 0 por SetIdentity + sobrescrituras
+        projection_matrix.M[0][1] = projection_matrix.M[0][2] = projection_matrix.M[0][3] = 0.0f;
+        projection_matrix.M[1][0] = projection_matrix.M[1][2] = projection_matrix.M[1][3] = 0.0f;
+        projection_matrix.M[2][0] = projection_matrix.M[2][1] = 0.0f;
+        projection_matrix.M[3][0] = projection_matrix.M[3][1] = 0.0f;
+    }
+    else // ORTHOGRAPHIC
+    {
+        float l = left, r = right, b = bottom, t = top;
+        float n = near_plane, fa = far_plane;
+
+        projection_matrix.M[0][0] =  2.0f / (r - l);
+        projection_matrix.M[1][1] =  2.0f / (t - b);
+        projection_matrix.M[2][2] = -2.0f / (fa - n);
+
+        projection_matrix.M[3][0] = -(r + l) / (r - l);
+        projection_matrix.M[3][1] = -(t + b) / (t - b);
+        projection_matrix.M[3][2] = -(fa + n) / (fa - n);
+        projection_matrix.M[3][3] =  1.0f;
+
+        projection_matrix.M[0][1] = projection_matrix.M[0][2] = projection_matrix.M[0][3] = 0.0f;
+        projection_matrix.M[1][0] = projection_matrix.M[1][2] = projection_matrix.M[1][3] = 0.0f;
+        projection_matrix.M[2][0] = projection_matrix.M[2][1] = projection_matrix.M[2][3] = 0.0f;
+        projection_matrix.M[3][3] = 1.0f;
+    }
+
+    UpdateViewProjectionMatrix();
 }
+
 
 void Camera::UpdateViewProjectionMatrix()
 {

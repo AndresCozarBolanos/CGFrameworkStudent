@@ -29,32 +29,86 @@ Application::~Application() {}
 void Application::Init()
 {
     camera = new Camera();
-    camera->LookAt(Vector3(0, 20, 50), Vector3(0, 5, 0), Vector3(0, 1, 0));
-    camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f); 
+    camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
+    camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
-    
-	Mesh* mesh = new Mesh();
-	mesh->LoadOBJ("meshes/lee.obj");
+    Mesh* lee = new Mesh();
+    lee->LoadOBJ("meshes/lee.obj");
 
-    Matrix44 m;
+    // ---- MODO 1: single entity ----
+    Matrix44 m; 
     m.SetIdentity();
-    entity = new Entity(mesh, m);
+
+    entity = new Entity(lee, m);
+    entity->position = Vector3(0, 0, 0);
+    entity->rotation_axis = Vector3(0, 1, 0);
+    entity->rotation_speed = 1.0f;
+    entity->scale_value = 20.0f;   // SIEMPRE positiva
+    entity->Update(0.0f);
+
+    // ---- MODO 2: multi entities (mínimo 3) ----
+    entities.clear();
+
+    Entity* e1 = new Entity(lee, m);
+    e1->position = Vector3(-6, 4, 0);             // <-- subido
+    e1->rotation_axis = Vector3(0, 1, 0);
+    e1->rotation_speed = 1.2f;
+    e1->scale_value = 10.0f;
+    e1->Update(0.0f);
+
+    Entity* e2 = new Entity(lee, m);
+    e2->position = Vector3(0, 4, 0);              // <-- subido y centrado en X
+    e2->rotation_axis = Vector3(1, 0, 0);
+    e2->rotation_speed = 1.0f;
+    e2->scale_value = 10.0f;
+    e2->Update(0.0f);
+
+    Entity* e3 = new Entity(lee, m);
+    e3->position = Vector3(6, 4, 0);              // <-- subido
+    e3->rotation_axis = Vector3(0, 0, 1);
+    e3->rotation_speed = 0.8f;
+    e3->scale_value = 10.0f;
+    e3->Update(0.0f);
+
+    entities.push_back(e1);
+    entities.push_back(e2);
+    entities.push_back(e3);
+
+    mode = 1;
 }
 
 void Application::Render()
 {
     framebuffer.Fill(Color::BLACK);
     framebuffer.DrawImage(canvas, 0, 0);
-    if (entity) {
-        entity->Render(&framebuffer, camera, Color::WHITE);
+
+    if (mode == 1)
+    {
+        if (entity)
+            entity->Render(&framebuffer, camera, Color::WHITE);
     }
+    else if (mode == 2)
+    {
+        if (entities.size() >= 1 && entities[0]) entities[0]->Render(&framebuffer, camera, Color::BLUE);
+        if (entities.size() >= 2 && entities[1]) entities[1]->Render(&framebuffer, camera, Color::WHITE);
+        if (entities.size() >= 3 && entities[2]) entities[2]->Render(&framebuffer, camera, Color::RED);
+    }
+
     framebuffer.Render();
 }
 
+
 void Application::Update(float dt)
 {
-    camera->UpdateViewMatrix();
-    camera->UpdateProjectionMatrix();
+    if (mode == 1)
+    {
+        if (entity) entity->Update(dt);
+    }
+    else if (mode == 2)
+    {
+        for (Entity* e : entities)
+            if (e) e->Update(dt);
+    }
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
@@ -63,23 +117,13 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     {
         case SDLK_ESCAPE: exit(0);
 
-        case SDLK_1: particlesMode = false; break;
-        case SDLK_2: particlesMode = true;  break;
+        case SDLK_1: mode = 1; break; // SINGLE ENTITY
+        case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
 
-        case SDLK_PLUS:
-        case SDLK_KP_PLUS:
-            borderWidth++;
-            break;
-        case SDLK_MINUS:
-        case SDLK_KP_MINUS:
-            borderWidth = std::max(1,borderWidth-1);
-            break;
-
-        case SDLK_f:
-            isFilled = !isFilled;
-            break;
+        default: break;
     }
 }
+
 
 void Application::OnMouseButtonDown(SDL_MouseButtonEvent event)
 {

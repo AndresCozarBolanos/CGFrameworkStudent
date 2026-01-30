@@ -6,36 +6,41 @@
 #include "image.h"
 #include "button.h"
 #include "particlesystem.h"
+#include "entity.h"   // <-- NECESARIO para Entity
 
 class Application
 {
 public:
     // Window
     SDL_Window* window = nullptr;
-    int window_width;
-    int window_height;
+    int window_width = 0;
+    int window_height = 0;
 
-    float time;
+    float time = 0.0f;
 
     // Input
-    const Uint8* keystate;
-    int mouse_state;
+    const Uint8* keystate = nullptr;
+    int mouse_state = 0;
     Vector2 mouse_position;
     Vector2 mouse_delta;
 
-    Entity* entity = nullptr;
+    // --- LAB2: escena ---
     Camera* camera = nullptr;
+
+    Entity* entity = nullptr;               // modo 1: single
+    std::vector<Entity*> entities;          // modo 2: multi
+    int mode = 1;                           // 1 = single, 2 = multi
 
     // Framebuffer
     Image framebuffer;
     Image canvas;
     Color backgroundColor = Color::BLACK;
 
-    // Tools
+    // Tools (paint)
     enum class Tool { NONE, PENCIL, ERASER, LINE, RECT, TRIANGLE };
     Tool currentTool = Tool::NONE;
 
-    // State
+    // State (paint)
     bool isPlacing = false;
     bool isDrawing = false;
     Vector2 startPos, endPos, prevPos;
@@ -52,7 +57,7 @@ public:
     std::vector<Button> buttons;
     int toolbarH = 50;
 
-    // Particles
+    // Particles (si lo quieres conservar)
     ParticleSystem ps;
     bool particlesMode = false;
 
@@ -75,8 +80,15 @@ public:
         glViewport(0, 0, width, height);
         window_width = width;
         window_height = height;
+
         framebuffer.Resize(width, height);
         canvas.Resize(width, height);
         canvas.Fill(backgroundColor);
+
+        // IMPORTANT: si cambias tamaño, actualiza aspect (2.3/2.5)
+        if (camera)
+            camera->SetAspectRatio(width / (float)height);
     }
+
+    
 };

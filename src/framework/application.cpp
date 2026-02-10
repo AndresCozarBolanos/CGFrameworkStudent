@@ -35,6 +35,9 @@ void Application::Init()
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
 
+    Image* lee_texture = new Image();
+    bool hasTexture = lee_texture->LoadTGA("textures/lee_color_specular.tga", true);
+
     // ---- MODO 1: single entity ----
     Matrix44 m; 
     m.SetIdentity();
@@ -43,31 +46,35 @@ void Application::Init()
     entity->position = Vector3(0, 0, 0);
     entity->rotation_axis = Vector3(0, 1, 0);
     entity->rotation_speed = 1.0f;
-    entity->scale_value = 20.0f;   // SIEMPRE positiva
+    entity->scale_value = 20.0f; 
+    if (hasTexture) entity->texture = lee_texture;
     entity->Update(0.0f);
 
     // ---- MODO 2: multi entities (mínimo 3) ----
     entities.clear();
 
     Entity* e1 = new Entity(lee, m);
-    e1->position = Vector3(-6, 4, 0);             // <-- subido
+    e1->position = Vector3(-6, 4, 0);             
     e1->rotation_axis = Vector3(0, 1, 0);
     e1->rotation_speed = 1.2f;
     e1->scale_value = 10.0f;
+    if (hasTexture) e1->texture = lee_texture;
     e1->Update(0.0f);
 
     Entity* e2 = new Entity(lee, m);
-    e2->position = Vector3(0, 4, 0);              // <-- subido y centrado en X
+    e2->position = Vector3(0, 4, 0);              
     e2->rotation_axis = Vector3(1, 0, 0);
     e2->rotation_speed = 1.0f;
     e2->scale_value = 10.0f;
+    if (hasTexture) e2->texture = lee_texture;
     e2->Update(0.0f);
 
     Entity* e3 = new Entity(lee, m);
-    e3->position = Vector3(6, 4, 0);              // <-- subido
+    e3->position = Vector3(6, 4, 0);              
     e3->rotation_axis = Vector3(0, 0, 1);
     e3->rotation_speed = 0.8f;
     e3->scale_value = 10.0f;
+    if (hasTexture) e3->texture = lee_texture;
     e3->Update(0.0f);
 
     entities.push_back(e1);
@@ -75,6 +82,7 @@ void Application::Init()
     entities.push_back(e3);
 
     mode = 1;
+    zBuffer.Resize(window_width, window_height);
 }
 
 void Application::Render()
@@ -82,16 +90,20 @@ void Application::Render()
     framebuffer.Fill(Color::BLACK);
     framebuffer.DrawImage(canvas, 0, 0);
 
+    zBuffer.Resize(framebuffer.width, framebuffer.height);
+    zBuffer.Fill(100.0f);
+
     if (mode == 1)
     {
         if (entity)
-            entity->Render(&framebuffer, camera, Color::WHITE);
+            entity->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
     }
     else if (mode == 2)
     {
-        if (entities.size() >= 1 && entities[0]) entities[0]->Render(&framebuffer, camera, Color::BLUE);
-        if (entities.size() >= 2 && entities[1]) entities[1]->Render(&framebuffer, camera, Color::WHITE);
-        if (entities.size() >= 3 && entities[2]) entities[2]->Render(&framebuffer, camera, Color::RED);
+        if (entities.size() >= 1 && entities[0]) entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        if (entities.size() >= 2 && entities[1]) entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        if (entities.size() >= 3 && entities[2]) entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+
     }
 
     framebuffer.Render();
@@ -109,6 +121,22 @@ void Application::Update(float dt)
         for (Entity* e : entities)
             if (e) e->Update(dt);
     }
+    float speed = 0.5f;
+
+    if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        Matrix44 R;
+        R.MakeRotationMatrix(-mouse_delta.x * speed * dt, Vector3(0, 1, 0));
+        Vector3 new_eye = R * (camera->eye - camera->center);
+        camera->eye = camera->center + new_eye;
+        camera->LookAt(camera->eye, camera->center, camera->up);
+    }
+
+    if (mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+        Vector3 delta = camera->GetLocalVector(Vector3(mouse_delta.x, -mouse_delta.y, 0)) * speed * dt;
+        camera->eye = camera->eye - delta;
+        camera->center = camera->center - delta;
+        camera->UpdateViewMatrix();
+    }
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
@@ -119,6 +147,36 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 
         case SDLK_1: mode = 1; break; // SINGLE ENTITY
         case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
+
+        case SDLK_n: current_prop = 'N'; break;
+        case SDLK_f: current_prop = 'F'; break;
+        case SDLK_v: current_prop = 'V'; break;
+
+        case SDLK_t:
+            show_texture = !show_texture;
+            break;
+        case SDLK_z:
+            use_zbuffer = !use_zbuffer;
+            break;
+        case SDLK_c:
+            interpolate_uvs = !interpolate_uvs;
+            break;
+
+        case SDLK_PLUS:
+        case SDLK_KP_PLUS: 
+            if (current_prop == 'N') camera->near_plane += 1.0f;
+            if (current_prop == 'F') camera->far_plane += 50.0f;
+            if (current_prop == 'V') camera->fov += 5.0f;
+            camera->UpdateProjectionMatrix(); 
+            break;
+
+        case SDLK_MINUS:
+        case SDLK_KP_MINUS: 
+            if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
+            if (current_prop == 'F') camera->far_plane = std::max(1.0f, camera->far_plane - 50.0f);
+            if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
+            camera->UpdateProjectionMatrix(); 
+            break;
 
         default: break;
     }
@@ -231,5 +289,11 @@ void Application::OnMouseMove(SDL_MouseButtonEvent)
 
 }
 
-void Application::OnWheel(SDL_MouseWheelEvent){}
+void Application::OnWheel(SDL_MouseWheelEvent event)
+{
+    float factor = (event.y > 0) ? 0.9f : 1.1f;
+    Vector3 forward = camera->eye - camera->center;
+    camera->eye = camera->center + forward * factor;
+    camera->UpdateViewMatrix();
+}
 void Application::OnFileChanged(const char* filename){ Shader::ReloadSingleShader(filename); }

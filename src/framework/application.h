@@ -24,12 +24,20 @@ public:
     Vector2 mouse_position;
     Vector2 mouse_delta;
 
-    // --- LAB2: escena ---
     Camera* camera = nullptr;
 
-    Entity* entity = nullptr;               // modo 1: single
-    std::vector<Entity*> entities;          // modo 2: multi
-    int mode = 1;                           // 1 = single, 2 = multi
+    Entity* entity = nullptr;               
+    std::vector<Entity*> entities;          
+    int mode = 1; 
+
+    float camera_speed = 0.5f;
+    float camera_property_step = 0.1f;
+    char current_prop = 'N'; 
+
+    FloatImage zBuffer;
+    bool show_texture = true;
+    bool use_zbuffer = true;
+    bool interpolate_uvs = true;
 
     // Framebuffer
     Image framebuffer;
@@ -85,7 +93,6 @@ public:
         canvas.Resize(width, height);
         canvas.Fill(backgroundColor);
 
-        // IMPORTANT: si cambias tamaño, actualiza aspect (2.3/2.5)
         if (camera)
             camera->SetAspectRatio(width / (float)height);
     }

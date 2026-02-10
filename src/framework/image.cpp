@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "camera.h"
 #include "mesh.h"
+#include "application.h"
 
 Image::Image() {
 	width = 0; height = 0;
@@ -527,4 +528,50 @@ void Image::DrawImage(const Image& src, int x, int y)
             SetPixel(x + i, y + j, src.GetPixel(i, j));
 }
 
+void Image::DrawTriangleInterpolated(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Color& c0, const Color& c1, const Color& c2, FloatImage* zbuffer, Image* texture, const Vector2& uv0, const Vector2& uv1, const Vector2& uv2, bool use_zbuffer, bool interpolate_uvs)
+{
+	int min_x = (int)std::min({ p0.x, p1.x, p2.x });
+	int max_x = (int)std::max({ p0.x, p1.x, p2.x });
+	int min_y = (int)std::min({ p0.y, p1.y, p2.y });
+	int max_y = (int)std::max({ p0.y, p1.y, p2.y });
 
+	min_x = std::max(0, min_x);
+	max_x = std::min((int)width - 1, max_x);
+	min_y = std::max(0, min_y);
+	max_y = std::min((int)height - 1, max_y);
+
+	float area = (p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y);
+
+	for (int y = min_y; y <= max_y; ++y) {
+		for (int x = min_x; x <= max_x; ++x) {
+
+			float px = (float)x;
+			float py = (float)y;
+
+			float w0 = ((p1.x - px) * (p2.y - py) - (p2.x - px) * (p1.y - py)) / area;
+			float w1 = ((p2.x - px) * (p0.y - py) - (p0.x - px) * (p2.y - py)) / area;
+			float w2 = 1.0f - w0 - w1;
+
+			if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+				float z = p0.z * w0 + p1.z * w1 + p2.z * w2;
+				if (!use_zbuffer || z < zbuffer->GetPixel(x, y)) {
+					if (use_zbuffer) zbuffer->SetPixel(x, y, z);
+
+					Color final_color;
+					if (texture && interpolate_uvs) { 
+						float u = uv0.x * w0 + uv1.x * w1 + uv2.x * w2;
+						float v = uv0.y * w0 + uv1.y * w1 + uv2.y * w2;
+						SetPixel(x, y, texture->GetPixel((int)(u * (texture->width - 1)), (int)(v * (texture->height - 1))));
+					}
+					else {
+						Color final_c;
+						final_c.r = (int)(c0.r * w0 + c1.r * w1 + c2.r * w2);
+						final_c.g = (int)(c0.g * w0 + c1.g * w1 + c2.g * w2);
+						final_c.b = (int)(c0.b * w0 + c1.b * w1 + c2.b * w2);
+						SetPixel(x, y, final_c);
+					}
+				}
+			}
+		}
+	}
+}

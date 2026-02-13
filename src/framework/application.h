@@ -61,6 +61,8 @@ public:
 
     int borderWidth = 1;
 
+    bool wireframe = false;
+
     // UI
     std::vector<Button> buttons;
     int toolbarH = 50;

@@ -88,7 +88,6 @@ void Application::Init()
 void Application::Render()
 {
     framebuffer.Fill(Color::BLACK);
-    framebuffer.DrawImage(canvas, 0, 0);
 
     zBuffer.Resize(framebuffer.width, framebuffer.height);
     zBuffer.Fill(100.0f);
@@ -100,9 +99,9 @@ void Application::Render()
     }
     else if (mode == 2)
     {
-        if (entities.size() >= 1 && entities[0]) entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        if (entities.size() >= 2 && entities[1]) entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        if (entities.size() >= 3 && entities[2]) entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
 
     }
 
@@ -158,6 +157,16 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
             break;
         case SDLK_z:
             use_zbuffer = !use_zbuffer;
+            break;
+        case SDLK_w:
+            wireframe = !wireframe;
+
+            if (entity) {
+                entity->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
+            }
+            for (Entity* e : entities) {
+                if (e) e->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
+            }
             break;
         case SDLK_c:
             interpolate_uvs = !interpolate_uvs;

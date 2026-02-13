@@ -84,6 +84,16 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer, boo
         Color c1 = Color::GREEN;
         Color c2 = Color::BLUE;
 
+        if (mode == eRenderMode::WIREFRAME)
+        {
+            // Dibuja SOLO bordes: 3 líneas
+            framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, Color::WHITE);
+            framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, Color::WHITE);
+            framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, Color::WHITE);
+        }
+        else // TRIANGLES
+        {
         framebuffer->DrawTriangleInterpolated(s0, s1, s2, c0, c1, c2, zBuffer, texture, uv0, uv1, uv2, use_z, interp_uv && show_tex);
+        }
     }
 }

@@ -4,10 +4,11 @@
 #include "image.h"
 #include "camera.h"
 
+enum class eRenderMode { WIREFRAME, TRIANGLES };
 class Entity
 {
 public:
-
+    eRenderMode mode = eRenderMode::TRIANGLES;
     //Define every entry
     Mesh* mesh = nullptr;
     Matrix44 model;

@@ -7,6 +7,8 @@
 #include "button.h"
 #include "particlesystem.h"
 #include "entity.h"   
+#include "mesh.h"
+#include "shader.h"
 
 class Application
 {
@@ -66,6 +68,11 @@ public:
     // UI
     std::vector<Button> buttons;
     int toolbarH = 50;
+
+    //lab 4
+    Mesh* mesh = nullptr;
+    Shader* shader = nullptr;
+    int actual_shader = 0;
 
     // Particles 
     ParticleSystem ps;

@@ -83,11 +83,24 @@ void Application::Init()
 
     mode = 1;
     zBuffer.Resize(window_width, window_height);
+
+    mesh = new Mesh();
+    mesh->CreateQuad();
+    shader = Shader::Get("shaders/simple.vs", "shaders/simple.fs");
 }
 
 void Application::Render()
 {
     framebuffer.Fill(Color::BLACK);
+
+    shader->Enable();
+
+    shader->SetInt("u_exercice", actual_shader);
+    shader->SetFloat("u_time", time);
+
+    mesh-> Render();
+
+    shader->Disable();
 
     zBuffer.Resize(framebuffer.width, framebuffer.height);
     zBuffer.Fill(100.0f);
@@ -143,13 +156,20 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch(event.keysym.sym)
     {
+        case SDLK_a: actual_shader = 0; break;
+        case SDLK_b: actual_shader = 1; break;
+        case SDLK_c: actual_shader = 2; break;
+        case SDLK_d: actual_shader = 3; break;
+        case SDLK_e: actual_shader = 4; break;
+        case SDLK_f: actual_shader = 5; break;
+
         case SDLK_ESCAPE: exit(0);
 
         case SDLK_1: mode = 1; break; // SINGLE ENTITY
         case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
 
         case SDLK_n: current_prop = 'N'; break;
-        case SDLK_f: current_prop = 'F'; break;
+        //case SDLK_f: current_prop = 'F'; break;
         case SDLK_v: current_prop = 'V'; break;
 
         case SDLK_t:
@@ -168,14 +188,14 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
                 if (e) e->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
             }
             break;
-        case SDLK_c:
-            interpolate_uvs = !interpolate_uvs;
-            break;
+        //case SDLK_c:
+            //interpolate_uvs = !interpolate_uvs;
+            //break;
 
         case SDLK_PLUS:
         case SDLK_KP_PLUS: 
             if (current_prop == 'N') camera->near_plane += 1.0f;
-            if (current_prop == 'F') camera->far_plane += 50.0f;
+            //if (current_prop == 'F') camera->far_plane += 50.0f;
             if (current_prop == 'V') camera->fov += 5.0f;
             camera->UpdateProjectionMatrix(); 
             break;
@@ -183,7 +203,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_MINUS:
         case SDLK_KP_MINUS: 
             if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
-            if (current_prop == 'F') camera->far_plane = std::max(1.0f, camera->far_plane - 50.0f);
+            //if (current_prop == 'F') camera->far_plane = std::max(1.0f, camera->far_plane - 50.0f);
             if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
             camera->UpdateProjectionMatrix(); 
             break;

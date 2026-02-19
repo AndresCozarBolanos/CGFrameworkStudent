@@ -28,140 +28,142 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-    camera = new Camera();
-    camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
-    camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
+    //camera = new Camera();
+    //camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
+    //camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
-    Mesh* lee = new Mesh();
-    lee->LoadOBJ("meshes/lee.obj");
+    //Mesh* lee = new Mesh();
+    //lee->LoadOBJ("meshes/lee.obj");
 
-    Image* lee_texture = new Image();
-    bool hasTexture = lee_texture->LoadTGA("textures/lee_color_specular.tga", true);
+    //Image* lee_texture = new Image();
+    //bool hasTexture = lee_texture->LoadTGA("textures/lee_color_specular.tga", true);
 
     // ---- MODE 1: single entity ----
-    Matrix44 m; 
-    m.SetIdentity();
+    //Matrix44 m; 
+    //m.SetIdentity();
 
-    entity = new Entity(lee, m);
-    entity->position = Vector3(0, 0, 0);
-    entity->rotation_axis = Vector3(0, 1, 0);
-    entity->rotation_speed = 1.0f;
-    entity->scale_value = 20.0f; 
-    if (hasTexture) entity->texture = lee_texture;
-    entity->Update(0.0f);
+    //entity = new Entity(lee, m);
+    //entity->position = Vector3(0, 0, 0);
+    //entity->rotation_axis = Vector3(0, 1, 0);
+    //entity->rotation_speed = 1.0f;
+    //entity->scale_value = 20.0f; 
+    //if (hasTexture) entity->texture = lee_texture;
+    //entity->Update(0.0f);
 
     // ---- MODE 2: multi entities ----
-    entities.clear();
+    //entities.clear();
 
-    Entity* e1 = new Entity(lee, m);
-    e1->position = Vector3(-6, 4, 0);             
-    e1->rotation_axis = Vector3(0, 1, 0);
-    e1->rotation_speed = 1.2f;
-    e1->scale_value = 10.0f;
-    if (hasTexture) e1->texture = lee_texture;
-    e1->Update(0.0f);
+    //Entity* e1 = new Entity(lee, m);
+    //e1->position = Vector3(-6, 4, 0);             
+    //e1->rotation_axis = Vector3(0, 1, 0);
+    //e1->rotation_speed = 1.2f;
+    //e1->scale_value = 10.0f;
+    //if (hasTexture) e1->texture = lee_texture;
+    //e1->Update(0.0f);
 
-    Entity* e2 = new Entity(lee, m);
-    e2->position = Vector3(0, 4, 0);              
-    e2->rotation_axis = Vector3(1, 0, 0);
-    e2->rotation_speed = 1.0f;
-    e2->scale_value = 10.0f;
-    if (hasTexture) e2->texture = lee_texture;
-    e2->Update(0.0f);
+    //Entity* e2 = new Entity(lee, m);
+    //e2->position = Vector3(0, 4, 0);              
+    //e2->rotation_axis = Vector3(1, 0, 0);
+    //e2->rotation_speed = 1.0f;
+    //e2->scale_value = 10.0f;
+    //if (hasTexture) e2->texture = lee_texture;
+    //e2->Update(0.0f);
 
-    Entity* e3 = new Entity(lee, m);
-    e3->position = Vector3(6, 4, 0);              
-    e3->rotation_axis = Vector3(0, 0, 1);
-    e3->rotation_speed = 0.8f;
-    e3->scale_value = 10.0f;
-    if (hasTexture) e3->texture = lee_texture;
-    e3->Update(0.0f);
+    //Entity* e3 = new Entity(lee, m);
+    //e3->position = Vector3(6, 4, 0);              
+    //e3->rotation_axis = Vector3(0, 0, 1);
+    //e3->rotation_speed = 0.8f;
+    //e3->scale_value = 10.0f;
+    //if (hasTexture) e3->texture = lee_texture;
+    //e3->Update(0.0f);
 
-    entities.push_back(e1);
-    entities.push_back(e2);
-    entities.push_back(e3);
+    //entities.push_back(e1);
+    //entities.push_back(e2);
+    //entities.push_back(e3);
 
-    mode = 1;
-    zBuffer.Resize(window_width, window_height);
+    //mode = 1;
+    //zBuffer.Resize(window_width, window_height);
 
     mesh = new Mesh();
     mesh->CreateQuad();
-    shader = Shader::Get("shaders/simple.vs", "shaders/simple.fs");
+    shader = Shader::Get("shaders/quad2.vs", "shaders/quad2.fs");
 }
 
 void Application::Render()
 {
-    framebuffer.Fill(Color::BLACK);
+    //framebuffer.Fill(Color::BLACK);
+    glClearColor(0.0, 0.0, 0.0, 1.0); // Color de fondo negro
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->Enable();
 
-    shader->SetInt("u_exercice", actual_shader);
-    shader->SetFloat("u_time", time);
+    //shader->SetInt("u_exercice", actual_shader);
+    //shader->SetFloat("u_time", time);
 
     mesh-> Render();
 
     shader->Disable();
 
-    zBuffer.Resize(framebuffer.width, framebuffer.height);
-    zBuffer.Fill(100.0f);
+    //zBuffer.Resize(framebuffer.width, framebuffer.height);
+    //zBuffer.Fill(100.0f);
 
-    if (mode == 1)
-    {
-        if (entity)
-            entity->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-    }
-    else if (mode == 2)
-    {
-        entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+    //if (mode == 1)
+    //{
+        //if (entity)
+            //entity->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+    //}
+    //else if (mode == 2)
+    //{
+        //entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        //entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
+        //entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
 
-    }
+    //}
 
-    framebuffer.Render();
+    //framebuffer.Render();
 }
 
 
 void Application::Update(float dt)
 {
-    if (mode == 1)
-    {
-        if (entity) entity->Update(dt);
-    }
-    else if (mode == 2)
-    {
-        for (Entity* e : entities)
-            if (e) e->Update(dt);
-    }
-    float speed = 0.5f;
+    //if (mode == 1)
+    //{
+        //if (entity) entity->Update(dt);
+    //}
+    //else if (mode == 2)
+    //{
+        //for (Entity* e : entities)
+            //if (e) e->Update(dt);
+    //}
+    //float speed = 0.5f;
 
-    if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        Matrix44 R;
-        R.MakeRotationMatrix(-mouse_delta.x * speed * dt, Vector3(0, 1, 0));
+    //if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        //Matrix44 R;
+        //R.MakeRotationMatrix(-mouse_delta.x * speed * dt, Vector3(0, 1, 0));
 		// Rotate the camera around the center point
-        Vector3 new_eye = R * (camera->eye - camera->center);
-        camera->eye = camera->center + new_eye;
-        camera->LookAt(camera->eye, camera->center, camera->up);
-    }
+        //Vector3 new_eye = R * (camera->eye - camera->center);
+        //camera->eye = camera->center + new_eye;
+        //camera->LookAt(camera->eye, camera->center, camera->up);
+    //}
 
-    if (mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        Vector3 delta = camera->GetLocalVector(Vector3(mouse_delta.x, -mouse_delta.y, 0)) * speed * dt;
-        camera->eye = camera->eye - delta;
-        camera->center = camera->center - delta;
-        camera->UpdateViewMatrix();
-    }
+    //if (mouse_state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+        //Vector3 delta = camera->GetLocalVector(Vector3(mouse_delta.x, -mouse_delta.y, 0)) * speed * dt;
+        //camera->eye = camera->eye - delta;
+        //camera->center = camera->center - delta;
+        //camera->UpdateViewMatrix();
+    //}
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch(event.keysym.sym)
     {
-        case SDLK_a: actual_shader = 0; break;
-        case SDLK_b: actual_shader = 1; break;
-        case SDLK_c: actual_shader = 2; break;
-        case SDLK_d: actual_shader = 3; break;
-        case SDLK_e: actual_shader = 4; break;
-        case SDLK_f: actual_shader = 5; break;
+        //case SDLK_a: actual_shader = 0; break;
+        //case SDLK_b: actual_shader = 1; break;
+        //case SDLK_c: actual_shader = 2; break;
+        //case SDLK_d: actual_shader = 3; break;
+        //case SDLK_e: actual_shader = 4; break;
+        //case SDLK_f: actual_shader = 5; break;
 
         case SDLK_ESCAPE: exit(0);
 

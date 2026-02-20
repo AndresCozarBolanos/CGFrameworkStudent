@@ -72,7 +72,8 @@ public:
     //lab 4
     Mesh* mesh = nullptr;
     Shader* shader = nullptr;
-    //int actual_shader = 0;
+	Texture* texture = nullptr;
+    //int actual_quad = 0;
 
     // Particles 
     ParticleSystem ps;

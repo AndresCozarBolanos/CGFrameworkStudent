@@ -86,19 +86,22 @@ void Application::Init()
 
     mesh = new Mesh();
     mesh->CreateQuad();
-    shader = Shader::Get("shaders/quad2.vs", "shaders/quad2.fs");
+    shader = Shader::Get("shaders/quad.vs", "shaders/quad6.fs");
+    texture = Texture::Get("images/fruits.png");
 }
 
 void Application::Render()
 {
     //framebuffer.Fill(Color::BLACK);
-    glClearColor(0.0, 0.0, 0.0, 1.0); // Color de fondo negro
+    glClearColor(0.0, 0.0, 0.0, 1.0); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->Enable();
 
-    //shader->SetInt("u_exercice", actual_shader);
-    //shader->SetFloat("u_time", time);
+    shader->SetFloat("u_time", time);
+    //shader->SetMatrix44("u_viewprojection", viewprojection);
+    shader->SetTexture("u_texture", texture);
+    shader->SetVector2("u_resolution", Vector2(framebuffer.width, framebuffer.height));
 
     mesh-> Render();
 

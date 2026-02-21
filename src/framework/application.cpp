@@ -86,7 +86,7 @@ void Application::Init()
 
     mesh = new Mesh();
     mesh->CreateQuad();
-    shader = Shader::Get("shaders/quad.vs", "shaders/quad1.fs");
+    //shader = Shader::Get("shaders/quad.vs", "shaders/quad2,6.fs");
     texture = Texture::Get("images/fruits.png");
 }
 
@@ -161,29 +161,45 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch(event.keysym.sym)
     {
+        case SDLK_1: mode = 1;
+        case SDLK_2: mode = 2;
+        case SDLK_3: mode = 3;
+        case SDLK_4: mode = 4; 
+
         case SDLK_a:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad1.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs");
             break;
+
         case SDLK_b:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad2.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,2.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,2.fs");
             break;
+
         case SDLK_c:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad3.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,3.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,3.fs");
             break;
+
         case SDLK_d:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad4.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,4.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,4.fs");
             break;
+
         case SDLK_e:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad5.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,5.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,5.fs");
             break;
+
         case SDLK_f:
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad6.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,6.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,6.fs");
             break;
 
         case SDLK_ESCAPE: exit(0);
 
-        case SDLK_1: mode = 1; break; // SINGLE ENTITY
-        case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
+        //case SDLK_1: mode = 1; break; // SINGLE ENTITY
+        //case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
 
         case SDLK_n: current_prop = 'N'; break;
         //case SDLK_f: current_prop = 'F'; break;

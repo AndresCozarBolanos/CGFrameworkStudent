@@ -86,7 +86,7 @@ void Application::Init()
 
     mesh = new Mesh();
     mesh->CreateQuad();
-    shader = Shader::Get("shaders/quad.vs", "shaders/quad6.fs");
+    shader = Shader::Get("shaders/quad.vs", "shaders/quad1.fs");
     texture = Texture::Get("images/fruits.png");
 }
 
@@ -161,12 +161,24 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch(event.keysym.sym)
     {
-        //case SDLK_a: actual_shader = 0; break;
-        //case SDLK_b: actual_shader = 1; break;
-        //case SDLK_c: actual_shader = 2; break;
-        //case SDLK_d: actual_shader = 3; break;
-        //case SDLK_e: actual_shader = 4; break;
-        //case SDLK_f: actual_shader = 5; break;
+        case SDLK_a:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad1.fs");
+            break;
+        case SDLK_b:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad2.fs");
+            break;
+        case SDLK_c:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad3.fs");
+            break;
+        case SDLK_d:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad4.fs");
+            break;
+        case SDLK_e:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad5.fs");
+            break;
+        case SDLK_f:
+            shader = Shader::Get("shaders/quad.vs", "shaders/quad6.fs");
+            break;
 
         case SDLK_ESCAPE: exit(0);
 

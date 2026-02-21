@@ -73,7 +73,7 @@ public:
     Mesh* mesh = nullptr;
     Shader* shader = nullptr;
 	Texture* texture = nullptr;
-    //int actual_quad = 0;
+    int actual_quad = 1;
 
     // Particles 
     ParticleSystem ps;

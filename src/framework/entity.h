@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "image.h"
 #include "camera.h"
+#include "shader.h"
 
 enum class eRenderMode { WIREFRAME, TRIANGLES };
 class Entity
@@ -12,7 +13,8 @@ public:
     //Define every entry
     Mesh* mesh = nullptr;
     Matrix44 model;
-    Image* texture = nullptr;
+    Shader* shader = nullptr;
+    Texture* texture = nullptr;
 
 	//Generated properties
     Vector3 position = Vector3(0,0,0);
@@ -25,5 +27,6 @@ public:
     Entity(Mesh* m, const Matrix44& initial_model);
 
     void Update(float seconds_elapsed);
-    void Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv);
+    //void Render_anterior(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv);
+    void Render(Camera* camera);
 };

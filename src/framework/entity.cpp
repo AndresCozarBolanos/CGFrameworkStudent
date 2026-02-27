@@ -32,7 +32,7 @@ void Entity::Update(float seconds_elapsed)
     model = T * R * S;
 }
 
-void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv)
+/*void Entity::Render_anterior(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv)
 {
     if (!framebuffer || !camera || !mesh) return;
 
@@ -96,4 +96,23 @@ void Entity::Render(Image* framebuffer, Camera* camera, FloatImage* zBuffer, boo
         framebuffer->DrawTriangleInterpolated(s0, s1, s2, c0, c1, c2, zBuffer, texture, uv0, uv1, uv2, use_z, interp_uv && show_tex);
         }
     }
+}
+*/
+
+void Entity::Render(Camera* camera)
+{
+    if (!mesh || !shader) return;
+
+    shader->Enable();
+
+    shader->SetMatrix44("u_model", model);
+    shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
+
+    if (texture) {
+        shader->SetTexture("u_texture", texture);
+    }
+
+    mesh->Render(GL_TRIANGLES);
+
+    shader->Disable();
 }

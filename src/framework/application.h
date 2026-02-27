@@ -30,7 +30,7 @@ public:
 
     Entity* entity = nullptr;               
     std::vector<Entity*> entities;          
-    int mode = 1; 
+    int mode = 1;
 
     float camera_speed = 0.5f;
     float camera_property_step = 0.1f;

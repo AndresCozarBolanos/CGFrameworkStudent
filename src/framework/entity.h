@@ -6,6 +6,9 @@
 #include "shader.h"
 
 enum class eRenderMode { WIREFRAME, TRIANGLES };
+struct sUniformData;
+class Material;
+
 class Entity
 {
 public:
@@ -13,8 +16,8 @@ public:
     //Define every entry
     Mesh* mesh = nullptr;
     Matrix44 model;
-    Shader* shader = nullptr;
-    Texture* texture = nullptr;
+    //Shader* shader = nullptr;
+    //Texture* texture = nullptr;
 
 	//Generated properties
     Vector3 position = Vector3(0,0,0);
@@ -22,11 +25,12 @@ public:
     float rotation_speed = 0.0f;   
     float rotation_angle = 0.0f;  
     float scale_value = 1.0f;
-
+    Material* material = nullptr;
     //Functions 
     Entity(Mesh* m, const Matrix44& initial_model);
 
     void Update(float seconds_elapsed);
     //void Render_anterior(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv);
-    void Render(Camera* camera);
+    //void Render_lab4(Camera* camera);
+    void Render(sUniformData& uniformData);
 };

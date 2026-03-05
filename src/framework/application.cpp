@@ -2,6 +2,7 @@
 #include "mesh.h"
 #include "shader.h"
 #include "entity.h"
+#include "material.h"
 #include <algorithm>
 
 // Constructor
@@ -32,12 +33,18 @@ void Application::Init()
     camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
     camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
+    ambient_light = Vector3(0.2f, 0.2f, 0.2f);
+    sLight main_light;
+    main_light.position = Vector3(10.0f, 20.0f, 10.0f);
+    main_light.diffuse_color = Vector3(1.0f, 1.0f, 1.0f);
+    scene_lights.push_back(main_light);
+
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
 
-    Texture* lee_texture = Texture::Get("textures/lee_color_specular.tga");
+    //Texture* lee_texture = Texture::Get("textures/lee_color_specular.tga");
 
-    Shader* raster_shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    //Shader* raster_shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
 
     Matrix44 m;
     m.SetIdentity();
@@ -47,12 +54,15 @@ void Application::Init()
     entity->rotation_axis = Vector3(0, 1, 0);
     entity->rotation_speed = 1.0f;
     entity->scale_value = 20.0f;
-    entity->texture = lee_texture; 
-	entity->shader = raster_shader;
+    //entity->texture = lee_texture; 
+	//entity->shader = raster_shader;
+
+    Material* mat = new Material();
+    mat->diffuse_texture = Texture::Get("textures/lee_color_specular.tga");
+    mat->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    entity->material = mat;
+
     entity->Update(0.0f);
-
-
-    
 
     // ---- MODE M: multi entities ----
     //entities.clear();
@@ -85,8 +95,6 @@ void Application::Init()
     //entities.push_back(e2);
     //entities.push_back(e3);
 
- 
-
     //---- MODE U: single entity ----
     
 
@@ -98,8 +106,10 @@ void Application::Init()
     mesh->CreateQuad();
     texture = Texture::Get("images/fruits.png");
 
-    mode = 1;
-    shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
+    mode = 4;
+    mat->shader = Shader::Get("shaders/gouraud.vs", "shaders/gouraud.fs");
+    //shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    //shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
 }
 
 void Application::Render()
@@ -112,8 +122,13 @@ void Application::Render()
     {
         glEnable(GL_DEPTH_TEST); 
 
+        uniform_data.viewprojection_matrix = camera->viewprojection_matrix;
+        uniform_data.camera_position = camera->eye;
+        uniform_data.ambient_light = ambient_light;
+        uniform_data.lights = scene_lights;
+
         if (entity) {
-            entity->Render(camera);
+            entity->Render(uniform_data);
         }
     }
     else

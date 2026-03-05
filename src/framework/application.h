@@ -9,6 +9,7 @@
 #include "entity.h"   
 #include "mesh.h"
 #include "shader.h"
+#include "material.h"
 
 class Application
 {
@@ -74,6 +75,11 @@ public:
     Shader* shader = nullptr;
 	Texture* texture = nullptr;
     int actual_quad = 1;
+
+	//lab 5
+    sUniformData uniform_data;
+    Vector3 ambient_light;
+    std::vector<sLight> scene_lights;
 
     // Particles 
     ParticleSystem ps;

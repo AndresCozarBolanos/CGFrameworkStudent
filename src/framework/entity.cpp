@@ -1,6 +1,9 @@
+#pragma once
+
 #include "entity.h"
 #include "utils.h"
 #include "application.h"
+#include "material.h"
 #include <cmath>
 
 Entity::Entity(Mesh* m, const Matrix44& initial_model)
@@ -99,7 +102,7 @@ void Entity::Update(float seconds_elapsed)
 }
 */
 
-void Entity::Render(Camera* camera)
+/*void Entity::Render_lab4(Camera* camera)
 {
     if (!mesh || !shader) return;
 
@@ -115,4 +118,32 @@ void Entity::Render(Camera* camera)
     mesh->Render(GL_TRIANGLES);
 
     shader->Disable();
+}
+*/
+
+void Entity::Render (sUniformData& uniformData)
+{
+    if (!mesh || !material || !material->shader) return;
+
+    uniformData.model_matrix = model;
+
+	material->Enable(uniformData);
+
+    Shader* shader = material->shader;
+    shader->SetMatrix44("u_model", model);
+    shader->SetMatrix44("u_viewprojection", uniformData.viewprojection_matrix);
+    shader->SetVector3("u_camera_position", uniformData.camera_position);
+    shader->SetVector3("u_ambient_light", uniformData.ambient_light);
+
+    if (uniformData.lights.size() > 0) {
+        shader->SetVector3("u_light_position", uniformData.lights[0].position);
+        shader->SetVector3("u_light_color", uniformData.lights[0].diffuse_color);
+    }
+    if (material->diffuse_texture) {
+        shader->SetTexture("u_texture", material->diffuse_texture);
+    }
+
+    mesh->Render(GL_TRIANGLES);
+
+    material->Disable();
 }

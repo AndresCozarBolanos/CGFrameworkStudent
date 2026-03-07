@@ -26,7 +26,7 @@ void main()
     float S = 32.0;
 
     float dist = length(u_light_position - world_position);
-    float attenuation = 1.0;
+    float attenuation = 1.0 ;
 
     vec3 ambient = k_a * u_ambient_light;
     vec3 diffuse = max(dot(L, world_normal), 0.0) * k_d * u_light_color;

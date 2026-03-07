@@ -121,29 +121,49 @@ void Entity::Update(float seconds_elapsed)
 }
 */
 
-void Entity::Render (sUniformData& uniformData)
+void Entity::Render(sUniformData& uniformData)
 {
     if (!mesh || !material || !material->shader) return;
 
-    uniformData.model_matrix = model;
-
-	material->Enable(uniformData);
-
+    material->Enable(uniformData);
     Shader* shader = material->shader;
+
     shader->SetMatrix44("u_model", model);
     shader->SetMatrix44("u_viewprojection", uniformData.viewprojection_matrix);
     shader->SetVector3("u_camera_position", uniformData.camera_position);
-    shader->SetVector3("u_ambient_light", uniformData.ambient_light);
 
-    if (uniformData.lights.size() > 0) {
-        shader->SetVector3("u_light_position", uniformData.lights[0].position);
-        shader->SetVector3("u_light_color", uniformData.lights[0].diffuse_color);
-    }
     if (material->diffuse_texture) {
         shader->SetTexture("u_texture", material->diffuse_texture);
     }
 
+    Texture* normal_map = Texture::Get("textures/lee_normal.tga"); 
+    if (normal_map) {
+        shader->SetTexture("u_normal_texture", normal_map);
+    }
+
     mesh->Render(GL_TRIANGLES);
 
+    for (size_t i = 0; i < uniformData.lights.size(); ++i)
+    {
+        if (i == 0) {
+            glDisable(GL_BLEND);
+            glDepthFunc(GL_LESS);
+            shader->SetVector3("u_ambient_light", uniformData.ambient_light);
+        }
+        else {
+            glEnable(GL_BLEND);
+            glDepthFunc(GL_LEQUAL);
+
+            shader->SetVector3("u_ambient_light", Vector3(0.0f, 0.0f, 0.0f));
+        }
+
+        shader->SetVector3("u_light_position", uniformData.lights[i].position);
+        shader->SetVector3("u_light_color", uniformData.lights[i].diffuse_color);
+
+        mesh->Render(GL_TRIANGLES);
+    }
+
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
     material->Disable();
 }

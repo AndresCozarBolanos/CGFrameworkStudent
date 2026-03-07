@@ -33,11 +33,22 @@ void Application::Init()
     camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
     camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
-    ambient_light = Vector3(0.2f, 0.2f, 0.2f);
-    sLight main_light;
-    main_light.position = Vector3(10.0f, 20.0f, 10.0f);
-    main_light.diffuse_color = Vector3(1.0f, 1.0f, 1.0f);
-    scene_lights.push_back(main_light);
+    scene_lights.clear();
+
+    sLight luz0_white;
+    luz0_white.position = Vector3(10.0f, 20.0f, 10.0f);
+    luz0_white.diffuse_color = Vector3(1.0f, 1.0f, 1.0f);
+    scene_lights.push_back(luz0_white);
+
+    sLight luz1_purple;
+    luz1_purple.position = Vector3(5.0f, 2.0f, 5.0f);
+    luz1_purple.diffuse_color = Vector3(1.2f, 0.0f, 2.0f);
+    scene_lights.push_back(luz1_purple);
+
+    sLight luz2_pink;
+    luz2_pink.position = Vector3(-5.0f, 2.0f, 5.0f);
+    luz2_pink.diffuse_color = Vector3(1.0f, 0.2f, 0.6f);
+    scene_lights.push_back(luz2_pink);
 
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
@@ -107,57 +118,76 @@ void Application::Init()
     texture = Texture::Get("images/fruits.png");
 
     mode = 4;
-    mat->shader = Shader::Get("shaders/gouraud.vs", "shaders/gouraud.fs");
-    //shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    //mat->shader = Shader::Get("shaders/phong2.vs", "shaders/phong2.fs");
+    shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
     //shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
 }
 
 void Application::Render()
 {
-    //framebuffer.Fill(Color::BLACK);
-    glClearColor(0.0, 0.0, 0.0, 1.0); 
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (mode == 4)
+    if (mode == 4 || is_lab5)
     {
-        glEnable(GL_DEPTH_TEST); 
+        glEnable(GL_DEPTH_TEST);
 
         uniform_data.viewprojection_matrix = camera->viewprojection_matrix;
         uniform_data.camera_position = camera->eye;
         uniform_data.ambient_light = ambient_light;
-        uniform_data.lights = scene_lights;
+
+        uniform_data.lights.clear();
+
+        if (is_lab5) {
+            if (num_lights == 1) {
+                if (scene_lights.size() > 0) uniform_data.lights.push_back(scene_lights[0]);
+            }
+            else if (num_lights == 2) {
+                if (scene_lights.size() > 1) uniform_data.lights.push_back(scene_lights[1]);
+                if (scene_lights.size() > 2) uniform_data.lights.push_back(scene_lights[2]);
+            }
+        }
+        else {
+            if (scene_lights.size() > 0) uniform_data.lights.push_back(scene_lights[0]);
+        }
 
         if (entity) {
+            if (entity->material && entity->material->shader) {
+                entity->material->shader->Enable(); 
+
+                if (is_lab5) {
+                    entity->material->shader->SetInt("u_use_color", use_color_texture ? 1 : 0);
+                    entity->material->shader->SetInt("u_use_specular", use_specular_texture ? 1 : 0);
+                    entity->material->shader->SetInt("u_use_normal", use_normal_texture ? 1 : 0);
+                }
+                else {
+                    entity->material->shader->SetInt("u_use_color", 1);
+                    entity->material->shader->SetInt("u_use_specular", 1);
+                    entity->material->shader->SetInt("u_use_normal", 1);
+                }
+
+                entity->material->shader->Disable(); 
+            }
+
             entity->Render(uniform_data);
         }
     }
     else
     {
-        glDisable(GL_DEPTH_TEST); 
+        glDisable(GL_DEPTH_TEST);
 
         if (shader) {
             shader->Enable();
             shader->SetFloat("u_time", time);
             shader->SetTexture("u_texture", texture);
-            shader->SetVector2("u_resolution", Vector2(window_width, window_height)); 
+            shader->SetVector2("u_resolution", Vector2(window_width, window_height));
 
-            mesh->Render(); 
+            mesh->Render();
 
             shader->Disable();
         }
     }
-    //else if (mode == 2)
-    //{
-        //entities[0]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        //entities[1]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-        //entities[2]->Render(&framebuffer, camera, &zBuffer, show_texture, use_zbuffer, interpolate_uvs);
-
-    //}
-
-    //framebuffer.Render();
 }
-
-
 void Application::Update(float dt)
 {
     if (mode == 4)
@@ -190,110 +220,118 @@ void Application::Update(float dt)
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
-    switch(event.keysym.sym)
+    switch (event.keysym.sym)
     {
-        case SDLK_1:
-            mode = 1;
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
-            break;
+    case SDLK_l:
+        is_lab5 = !is_lab5;
+        if (is_lab5) {
+            if (entity && entity->material) entity->material->shader = Shader::Get("shaders/phong.vs", "shaders/phong.fs");
+        }
+        else {
+            if (mode == 4 && entity && entity->material) entity->material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+        }
+        break;
 
-        case SDLK_2:
-            mode = 2;
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs");
-            break;
+    case SDLK_1:
+        if (is_lab5) num_lights = 1;
+        else { mode = 1; shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs"); }
+        break;
+    case SDLK_2:
+        if (is_lab5) num_lights = 2;
+        else { mode = 2; shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs"); }
+        break;
+    case SDLK_3:
+        if (is_lab5) num_lights = 3;
+        else { mode = 3; shader = Shader::Get("shaders/quad.vs", "shaders/quad3,1.fs"); }
+        break;
+    case SDLK_4:
+        if (is_lab5) num_lights = 4;
+        else { mode = 4; shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs"); }
+        break;
 
-        case SDLK_3: 
-            mode = 3;
-            shader = Shader::Get("shaders/quad.vs", "shaders/quad3,1.fs");
-            break;
+    case SDLK_c: 
+        if (is_lab5) use_color_texture = !use_color_texture;
+        else {
+            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,3.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,3.fs");
+        }
+        break;
 
-        case SDLK_4: 
-            mode = 4; 
-			shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
-			break;
+    case SDLK_n: 
+        if (is_lab5) use_normal_texture = !use_normal_texture;
+        else current_prop = 'N';
+        break;
 
-        case SDLK_a:
+    case SDLK_g:
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/gouraud.vs", "shaders/gouraud.fs");
+        break;
+    case SDLK_p:
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/phong.vs", "shaders/phong.fs");
+        break;
+    case SDLK_s:
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/phong_s.vs", "shaders/phong_s.fs");
+        break;
+
+    case SDLK_a:
+        if (!is_lab5) {
             if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
             else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs");
             else if (mode == 3) shader = Shader::Get("shaders/quad.vs", "shaders/quad3,1.fs");
-			else if (mode == 4) shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
-            break;
-
-        case SDLK_b:
+            else if (mode == 4) shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+        }
+        break;
+    case SDLK_b:
+        if (!is_lab5) {
             if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,2.fs");
             else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,2.fs");
             else if (mode == 3) shader = Shader::Get("shaders/quad.vs", "shaders/quad3,2.fs");
-            break;
-
-        case SDLK_c:
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,3.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,3.fs");
-            break;
-
-        case SDLK_d:
+        }
+        break;
+    case SDLK_d:
+        if (!is_lab5) {
             if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,4.fs");
             else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,4.fs");
-            break;
-
-        case SDLK_e:
+        }
+        break;
+    case SDLK_e:
+        if (!is_lab5) {
             if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,5.fs");
             else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,5.fs");
-            break;
-
-        case SDLK_f:
+        }
+        break;
+    case SDLK_f:
+        if (!is_lab5) {
             if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,6.fs");
             else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,6.fs");
-            break;
+        }
+        break;
 
-        case SDLK_ESCAPE: exit(0);
+    case SDLK_v: current_prop = 'V'; break;
+    case SDLK_t: show_texture = !show_texture; break;
+    case SDLK_z: use_zbuffer = !use_zbuffer; break;
+    case SDLK_w:
+        wireframe = !wireframe;
+        if (entity) entity->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
+        break;
 
-        //case SDLK_1: mode = 1; break; // SINGLE ENTITY
-        //case SDLK_2: mode = 2; break; // MULTI ANIMATED ENTITIES
+    case SDLK_PLUS:
+    case SDLK_KP_PLUS:
+        if (current_prop == 'N') camera->near_plane += 1.0f;
+        if (current_prop == 'V') camera->fov += 5.0f;
+        camera->UpdateProjectionMatrix();
+        break;
 
-        case SDLK_n: current_prop = 'N'; break;
-        //case SDLK_f: current_prop = 'F'; break;
-        case SDLK_v: current_prop = 'V'; break;
+    case SDLK_MINUS:
+    case SDLK_KP_MINUS:
+        if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
+        if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
+        camera->UpdateProjectionMatrix();
+        break;
 
-        case SDLK_t:
-            show_texture = !show_texture;
-            break;
-        case SDLK_z:
-            use_zbuffer = !use_zbuffer;
-            break;
-        case SDLK_w:
-            wireframe = !wireframe;
-
-            if (entity) {
-                entity->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
-            }
-            for (Entity* e : entities) {
-                if (e) e->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
-            }
-            break;
-        //case SDLK_c:
-            //interpolate_uvs = !interpolate_uvs;
-            //break;
-
-        case SDLK_PLUS:
-        case SDLK_KP_PLUS: 
-            if (current_prop == 'N') camera->near_plane += 1.0f;
-            //if (current_prop == 'F') camera->far_plane += 50.0f;
-            if (current_prop == 'V') camera->fov += 5.0f;
-            camera->UpdateProjectionMatrix(); 
-            break;
-
-        case SDLK_MINUS:
-        case SDLK_KP_MINUS: 
-            if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
-            //if (current_prop == 'F') camera->far_plane = std::max(1.0f, camera->far_plane - 50.0f);
-            if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
-            camera->UpdateProjectionMatrix(); 
-            break;
-
-        default: break;
+    case SDLK_ESCAPE: exit(0);
+    default: break;
     }
 }
-
 
 void Application::OnMouseButtonDown(SDL_MouseButtonEvent event)
 {

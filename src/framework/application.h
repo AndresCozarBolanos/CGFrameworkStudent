@@ -80,6 +80,11 @@ public:
     sUniformData uniform_data;
     Vector3 ambient_light;
     std::vector<sLight> scene_lights;
+	bool is_lab5 = false;
+    bool use_color_texture = true;
+    bool use_specular_texture = true;
+    bool use_normal_texture = true;
+    int num_lights = 1;
 
     // Particles 
     ParticleSystem ps;

@@ -19,8 +19,6 @@ Application::Application(const char* caption, int width, int height)
     keystate = SDL_GetKeyboardState(nullptr);
 
     framebuffer.Resize(w, h);
-    canvas.Resize(w, h);
-    canvas.Fill(backgroundColor);
 }
 
 // Destructor
@@ -174,7 +172,7 @@ void Application::Update(float dt)
         camera->center = camera->center - delta;
         camera->UpdateViewMatrix();
     }
-    
+
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
@@ -288,111 +286,11 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     }
 }
 
-void Application::OnMouseButtonDown(SDL_MouseButtonEvent event)
-{
-    if (event.button != SDL_BUTTON_LEFT) return;
+void Application::OnMouseButtonDown(SDL_MouseButtonEvent event){}
 
-    for (const Button& b : buttons)
-    {
-        if (!b.IsMouseInside(mouse_position)) continue;
+void Application::OnMouseButtonUp(SDL_MouseButtonEvent event){}
 
-        if (b.type==ButtonType::CLEAR){ canvas.Fill(backgroundColor); return; }
-        if (b.type==ButtonType::SAVE){ canvas.SaveTGA("paint.tga"); return; }
-        if (b.type==ButtonType::LOAD){
-            Image img;
-            if (img.LoadTGA("paint.tga",true))
-            {
-                canvas.Fill(backgroundColor);
-                canvas.DrawImage(img,0,0);
-            }
-            return;
-        }
-
-        if (b.type==ButtonType::PENCIL) currentTool=Tool::PENCIL;
-        if (b.type==ButtonType::ERASER) currentTool=Tool::ERASER;
-        if (b.type==ButtonType::LINE) currentTool=Tool::LINE;
-        if (b.type==ButtonType::RECTANGLE) currentTool=Tool::RECT;
-        if (b.type==ButtonType::TRIANGLE) currentTool=Tool::TRIANGLE;
-
-        if (b.type==ButtonType::COLOR_BLACK) currentColor=Color::BLACK;
-        if (b.type==ButtonType::COLOR_WHITE) currentColor=Color::WHITE;
-        if (b.type==ButtonType::COLOR_RED) currentColor=Color::RED;
-        if (b.type==ButtonType::COLOR_BLUE) currentColor=Color::BLUE;
-        if (b.type==ButtonType::COLOR_CYAN) currentColor=Color::CYAN;
-        if (b.type==ButtonType::COLOR_YELLOW) currentColor=Color::YELLOW;
-        if (b.type==ButtonType::COLOR_PINK) currentColor=Color::PURPLE;
-        if (b.type==ButtonType::COLOR_GREEN) currentColor=Color::GREEN;
-
-        return;
-    }
-
-    if (mouse_position.y < toolbarH) return;
-
-    if (currentTool==Tool::PENCIL || currentTool==Tool::ERASER)
-    {
-        isDrawing=true;
-        prevPos=mouse_position;
-    }
-    else if (currentTool==Tool::LINE || currentTool==Tool::RECT)
-    {
-        isPlacing=true;
-        startPos=endPos=mouse_position;
-    }
-    else if (currentTool==Tool::TRIANGLE)
-    {
-        if (triClicks==0){ triP0=mouse_position; triClicks=1; }
-        else if (triClicks==1){ triP1=mouse_position; triClicks=2; }
-        else{
-            canvas.DrawTriangle(triP0,triP1,mouse_position,currentColor,isFilled,currentColor);
-            triClicks=0;
-        }
-    }
-}
-
-void Application::OnMouseButtonUp(SDL_MouseButtonEvent event)
-{
-    if (event.button!=SDL_BUTTON_LEFT) return;
-
-    if (isDrawing){ isDrawing=false; return; }
-    if (!isPlacing) return;
-
-    isPlacing=false;
-
-    if (currentTool==Tool::LINE)
-        canvas.DrawLineDDA((int)startPos.x,(int)startPos.y,(int)endPos.x,(int)endPos.y,currentColor);
-
-    if (currentTool==Tool::RECT)
-    {
-        int x0 = (int)startPos.x;
-        int y0 = (int)startPos.y;
-        int x1 = (int)endPos.x;
-        int y1 = (int)endPos.y;
-
-        int x = std::min(x0, x1);
-        int y = std::min(y0, y1);
-        int w = std::abs(x1 - x0);
-        int h = std::abs(y1 - y0);
-        canvas.DrawRect(x,y,w,h,currentColor,borderWidth,isFilled,currentColor);
-    }
-}
-
-void Application::OnMouseMove(SDL_MouseButtonEvent)
-{
-    if (isPlacing) endPos=mouse_position;
-
-    if (isDrawing)
-    {
-        Color c = (currentTool==Tool::ERASER) ? backgroundColor : currentColor;
-
-        canvas.SetPixel((unsigned int)mouse_position.x, (unsigned int)mouse_position.y, c);
-
-        canvas.DrawLineDDA((int)prevPos.x, (int)prevPos.y,
-                        (int)mouse_position.x, (int)mouse_position.y, c);
-
-        prevPos = mouse_position;
-    }
-
-}
+void Application::OnMouseMove(SDL_MouseButtonEvent){}
 
 void Application::OnWheel(SDL_MouseWheelEvent event)
 {
@@ -401,4 +299,5 @@ void Application::OnWheel(SDL_MouseWheelEvent event)
     camera->eye = camera->center + forward * factor;
     camera->UpdateViewMatrix();
 }
+
 void Application::OnFileChanged(const char* filename){ Shader::ReloadSingleShader(filename); }

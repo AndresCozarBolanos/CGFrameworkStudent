@@ -1,36 +1,36 @@
 #pragma once
 #include "mesh.h"
 #include "framework.h"
-#include "image.h"
-#include "camera.h"
-#include "shader.h"
+#include "material.h"
 
-enum class eRenderMode { WIREFRAME, TRIANGLES };
 struct sUniformData;
-class Material;
 
 class Entity
 {
 public:
-    eRenderMode mode = eRenderMode::TRIANGLES;
-    //Define every entry
-    Mesh* mesh = nullptr;
-    Matrix44 model;
-    //Shader* shader = nullptr;
-    //Texture* texture = nullptr;
 
-	//Generated properties
+    // Geometry
+    Mesh* mesh = nullptr;
+
+    // Material (shader + textures)
+    Material* material = nullptr;
+
+    // Transform
+    Matrix44 model;
+
     Vector3 position = Vector3(0,0,0);
     Vector3 rotation_axis = Vector3(0,1,0);
-    float rotation_speed = 0.0f;   
-    float rotation_angle = 0.0f;  
+
+    float rotation_speed = 0.0f;
+    float rotation_angle = 0.0f;
     float scale_value = 1.0f;
-    Material* material = nullptr;
-    //Functions 
+
+    // Constructor
     Entity(Mesh* m, const Matrix44& initial_model);
 
+    // Update transform
     void Update(float seconds_elapsed);
-    //void Render_anterior(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv);
-    //void Render_lab4(Camera* camera);
+
+    // Render using GPU pipeline
     void Render(sUniformData& uniformData);
 };

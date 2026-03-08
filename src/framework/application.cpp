@@ -75,44 +75,6 @@ void Application::Init()
 
     entity->Update(0.0f);
 
-    // ---- MODE M: multi entities ----
-    //entities.clear();
-
-    //Entity* e1 = new Entity(lee, m);
-    //e1->position = Vector3(-6, 4, 0);             
-    //e1->rotation_axis = Vector3(0, 1, 0);
-    //e1->rotation_speed = 1.2f;
-    //e1->scale_value = 10.0f;
-    //if (hasTexture) e1->texture = lee_texture;
-    //e1->Update(0.0f);
-
-    //Entity* e2 = new Entity(lee, m);
-    //e2->position = Vector3(0, 4, 0);              
-    //e2->rotation_axis = Vector3(1, 0, 0);
-    //e2->rotation_speed = 1.0f;
-    //e2->scale_value = 10.0f;
-    //if (hasTexture) e2->texture = lee_texture;
-    //e2->Update(0.0f);
-
-    //Entity* e3 = new Entity(lee, m);
-    //e3->position = Vector3(6, 4, 0);              
-    //e3->rotation_axis = Vector3(0, 0, 1);
-    //e3->rotation_speed = 0.8f;
-    //e3->scale_value = 10.0f;
-    //if (hasTexture) e3->texture = lee_texture;
-    //e3->Update(0.0f);
-
-    //entities.push_back(e1);
-    //entities.push_back(e2);
-    //entities.push_back(e3);
-
-    //---- MODE U: single entity ----
-    
-
-    //shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
-
-   //Buffer.Resize(window_width, window_height);
-
     mesh = new Mesh();
     mesh->CreateQuad();
     texture = Texture::Get("images/fruits.png");
@@ -194,11 +156,7 @@ void Application::Update(float dt)
     {
         if (entity) entity->Update(dt);
     }
-    //else if (mode == 2)
-    //{
-        //for (Entity* e : entities)
-            //if (e) e->Update(dt);
-    //}
+   
     float speed = 0.5f;
 
     if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -216,6 +174,7 @@ void Application::Update(float dt)
         camera->center = camera->center - delta;
         camera->UpdateViewMatrix();
     }
+    
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
@@ -309,10 +268,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     case SDLK_v: current_prop = 'V'; break;
     case SDLK_t: show_texture = !show_texture; break;
     case SDLK_z: use_zbuffer = !use_zbuffer; break;
-    case SDLK_w:
-        wireframe = !wireframe;
-        if (entity) entity->mode = wireframe ? eRenderMode::WIREFRAME : eRenderMode::TRIANGLES;
-        break;
 
     case SDLK_PLUS:
     case SDLK_KP_PLUS:

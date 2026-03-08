@@ -1,5 +1,3 @@
-#pragma once
-
 #include "entity.h"
 #include "utils.h"
 #include "application.h"
@@ -11,22 +9,22 @@ Entity::Entity(Mesh* m, const Matrix44& initial_model)
     mesh = m;
     model = initial_model;
 }
+
 void Entity::Update(float seconds_elapsed)
 {
     rotation_angle += rotation_speed * seconds_elapsed;
 
-	//Scale, Rotate and Translate the model
-    Matrix44 S; 
+    Matrix44 S;
     S.SetIdentity();
     S.M[0][0] = scale_value;
     S.M[1][1] = scale_value;
     S.M[2][2] = scale_value;
 
-    Matrix44 R; 
+    Matrix44 R;
     R.SetIdentity();
     R.MakeRotationMatrix(rotation_angle, rotation_axis);
 
-    Matrix44 T; 
+    Matrix44 T;
     T.SetIdentity();
     T.M[3][0] = position.x;
     T.M[3][1] = position.y;
@@ -35,135 +33,14 @@ void Entity::Update(float seconds_elapsed)
     model = T * R * S;
 }
 
-/*void Entity::Render_anterior(Image* framebuffer, Camera* camera, FloatImage* zBuffer, bool show_tex, bool use_z, bool interp_uv)
-{
-    if (!framebuffer || !camera || !mesh) return;
-
-	// Get the vertices and uvs of the mesh
-    const std::vector<Vector3>& v = mesh->GetVertices();
-    const std::vector<Vector2>& uvs = mesh->GetUVs();
-
-    const float w = (float)framebuffer->width;
-    const float h = (float)framebuffer->height;
-
-    for (size_t i = 0; i + 2 < v.size(); i += 3)
-    {
-		// Transform to world space
-        Vector3 v0 = model * v[i];
-        Vector3 v1 = model * v[i + 1];
-        Vector3 v2 = model * v[i + 2];
-
-		// Project to screen space
-        Vector3 p0 = camera->ProjectVector(v0);
-        Vector3 p1 = camera->ProjectVector(v1);
-        Vector3 p2 = camera->ProjectVector(v2);
-
-        //Inside the screen [-1,1]
-        if (p0.x < -1 || p0.x > 1 || p0.y < -1 || p0.y > 1 || p0.z < -1 || p0.z > 1) continue;
-        if (p1.x < -1 || p1.x > 1 || p1.y < -1 || p1.y > 1 || p1.z < -1 || p1.z > 1) continue;
-        if (p2.x < -1 || p2.x > 1 || p2.y < -1 || p2.y > 1 || p2.z < -1 || p2.z > 1) continue;
-
-		// Convert to screen coordinates [0,w]x[0,h]
-        Vector3 s0, s1, s2;
-
-        s0.x = (p0.x * 0.5f + 0.5f) * w;
-        s0.y = (p0.y * 0.5f + 0.5f) * h;
-        s0.z = p0.z;
-
-        s1.x = (p1.x * 0.5f + 0.5f) * w;
-        s1.y = (p1.y * 0.5f + 0.5f) * h;
-        s1.z = p1.z;
-
-        s2.x = (p2.x * 0.5f + 0.5f) * w;
-        s2.y = (p2.y * 0.5f + 0.5f) * h;
-        s2.z = p2.z;
-
-		// Get the uvs of the triangle
-        Vector2 uv0 = uvs.size() ? uvs[i] : Vector2(0, 0);
-        Vector2 uv1 = uvs.size() ? uvs[i + 1] : Vector2(0, 0);
-        Vector2 uv2 = uvs.size() ? uvs[i + 2] : Vector2(0, 0);
-
-        Color c0 = Color::RED;
-        Color c1 = Color::GREEN;
-        Color c2 = Color::BLUE;
-
-        if (mode == eRenderMode::WIREFRAME)
-        {
-            // Dibuja SOLO bordes: 3 líneas
-            framebuffer->DrawLineDDA((int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y, Color::WHITE);
-            framebuffer->DrawLineDDA((int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y, Color::WHITE);
-            framebuffer->DrawLineDDA((int)s2.x, (int)s2.y, (int)s0.x, (int)s0.y, Color::WHITE);
-        }
-        else // TRIANGLES
-        {
-        framebuffer->DrawTriangleInterpolated(s0, s1, s2, c0, c1, c2, zBuffer, texture, uv0, uv1, uv2, use_z, interp_uv && show_tex);
-        }
-    }
-}
-*/
-
-/*void Entity::Render_lab4(Camera* camera)
-{
-    if (!mesh || !shader) return;
-
-    shader->Enable();
-
-    shader->SetMatrix44("u_model", model);
-    shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
-
-    if (texture) {
-        shader->SetTexture("u_texture", texture);
-    }
-
-    mesh->Render(GL_TRIANGLES);
-
-    shader->Disable();
-}
-*/
-
 void Entity::Render(sUniformData& uniformData)
 {
-    if (!mesh || !material || !material->shader) return;
+    if (!mesh || !material)
+        return;
+
+    uniformData.model_matrix = model;
 
     material->Enable(uniformData);
-    Shader* shader = material->shader;
-
-    shader->SetMatrix44("u_model", model);
-    shader->SetMatrix44("u_viewprojection", uniformData.viewprojection_matrix);
-    shader->SetVector3("u_camera_position", uniformData.camera_position);
-
-    if (material->diffuse_texture) {
-        shader->SetTexture("u_texture", material->diffuse_texture);
-    }
-
-    Texture* normal_map = Texture::Get("textures/lee_normal.tga"); 
-    if (normal_map) {
-        shader->SetTexture("u_normal_texture", normal_map);
-    }
-
-    mesh->Render(GL_TRIANGLES);
-
-    for (size_t i = 0; i < uniformData.lights.size(); ++i)
-    {
-        if (i == 0) {
-            glDisable(GL_BLEND);
-            glDepthFunc(GL_LESS);
-            shader->SetVector3("u_ambient_light", uniformData.ambient_light);
-        }
-        else {
-            glEnable(GL_BLEND);
-            glDepthFunc(GL_LEQUAL);
-
-            shader->SetVector3("u_ambient_light", Vector3(0.0f, 0.0f, 0.0f));
-        }
-
-        shader->SetVector3("u_light_position", uniformData.lights[i].position);
-        shader->SetVector3("u_light_color", uniformData.lights[i].diffuse_color);
-
-        mesh->Render(GL_TRIANGLES);
-    }
-
-    glDisable(GL_BLEND);
-    glDepthFunc(GL_LESS);
+    mesh->Render();
     material->Disable();
 }

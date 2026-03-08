@@ -63,7 +63,7 @@ void Application::Init()
 
     Material* mat = new Material();
     mat->diffuse_texture = Texture::Get("textures/lee_color_specular.tga");
-    mat->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+    mat->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
     entity->material = mat;
 
     entity->Update(0.0f);
@@ -74,8 +74,8 @@ void Application::Init()
 
     mode = 4;
     //mat->shader = Shader::Get("shaders/phong2.vs", "shaders/phong2.fs");
-    shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
-    //shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
+    shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
+    //shader = Shader::Get("shaders/quad.vs", "shaders/quad1_1.fs");
 }
 
 void Application::Render()
@@ -178,35 +178,35 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
     case SDLK_l:
         is_lab5 = !is_lab5;
         if (is_lab5) {
-            if (entity && entity->material) entity->material->shader = Shader::Get("shaders/phong.vs", "shaders/phong.fs");
+            if (entity && entity->material) entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
         }
         else {
-            if (mode == 4 && entity && entity->material) entity->material->shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+            if (mode == 4 && entity && entity->material) entity->material->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
         }
         break;
 
     case SDLK_1:
         if (is_lab5) num_lights = 1;
-        else { mode = 1; shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs"); }
+        else { mode = 1; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs"); }
         break;
     case SDLK_2:
         if (is_lab5) num_lights = 2;
-        else { mode = 2; shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs"); }
+        else { mode = 2; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs"); }
         break;
     case SDLK_3:
         if (is_lab5) num_lights = 3;
-        else { mode = 3; shader = Shader::Get("shaders/quad.vs", "shaders/quad3,1.fs"); }
+        else { mode = 3; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs"); }
         break;
     case SDLK_4:
         if (is_lab5) num_lights = 4;
-        else { mode = 4; shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs"); }
+        else { mode = 4; shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs"); }
         break;
 
     case SDLK_c: 
         if (is_lab5) use_color_texture = !use_color_texture;
         else {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,3.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,3.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_3.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_3.fs");
         }
         break;
 
@@ -216,46 +216,46 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         break;
 
     case SDLK_g:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/gouraud.vs", "shaders/gouraud.fs");
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/gouraud.vs", "shaders/lighting/gouraud.fs");
         break;
     case SDLK_p:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/phong.vs", "shaders/phong.fs");
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
         break;
     case SDLK_s:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/phong_s.vs", "shaders/phong_s.fs");
+        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/phong_s.vs", "shaders/lighting/phong_s.fs");
         break;
 
     case SDLK_a:
         if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,1.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,1.fs");
-            else if (mode == 3) shader = Shader::Get("shaders/quad.vs", "shaders/quad3,1.fs");
-            else if (mode == 4) shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs");
+            else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs");
+            else if (mode == 4) shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
         }
         break;
     case SDLK_b:
         if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,2.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,2.fs");
-            else if (mode == 3) shader = Shader::Get("shaders/quad.vs", "shaders/quad3,2.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_2.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_2.fs");
+            else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_2.fs");
         }
         break;
     case SDLK_d:
         if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,4.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,4.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_4.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_4.fs");
         }
         break;
     case SDLK_e:
         if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,5.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,5.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_5.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_5.fs");
         }
         break;
     case SDLK_f:
         if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quad.vs", "shaders/quad1,6.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quad.vs", "shaders/quad2,6.fs");
+            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_6.fs");
+            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_6.fs");
         }
         break;
 

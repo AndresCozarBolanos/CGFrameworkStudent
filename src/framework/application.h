@@ -4,10 +4,11 @@
 #include "main/includes.h"
 #include "framework.h"
 #include "image.h"
-#include "entity.h"   
 #include "mesh.h"
 #include "shader.h"
 #include "material.h"
+#include "entity.h"
+#include "camera.h"
 
 class Application
 {
@@ -25,16 +26,23 @@ public:
     Vector2 mouse_position;
     Vector2 mouse_delta;
 
+    // Camera
     Camera* camera = nullptr;
 
-    Entity* entity = nullptr;               
-    std::vector<Entity*> entities;          
-    int mode = 1;
+    // Scene
+    Entity* entity = nullptr;
+    std::vector<Entity*> entities;
 
+    // General mode
+    int mode = 1;
+    bool is_lab5 = false;
+
+    // Camera controls
     float camera_speed = 0.5f;
     float camera_property_step = 0.1f;
-    char current_prop = 'N'; 
+    char current_prop = 'N';
 
+    // Old CPU framebuffer stuff
     FloatImage zBuffer;
     bool show_texture = true;
     bool use_zbuffer = true;
@@ -43,20 +51,25 @@ public:
     // Framebuffer
     Image framebuffer;
 
-    //lab 4
-    Mesh* mesh = nullptr;
-    Shader* shader = nullptr;
-	Texture* texture = nullptr;
+    // -------------------------
+    // LAB 4
+    // -------------------------
+    Mesh* mesh = nullptr;          // quad
+    Shader* shader = nullptr;      // quad shader
+    Texture* texture = nullptr;    // quad texture
     int actual_quad = 1;
 
-	//lab 5
+    // -------------------------
+    // LAB 5
+    // -------------------------
     sUniformData uniform_data;
-    Vector3 ambient_light;
+    Vector3 ambient_light = Vector3(0.2f, 0.2f, 0.2f);
     std::vector<sLight> scene_lights;
-	bool is_lab5 = false;
+
     bool use_color_texture = true;
     bool use_specular_texture = true;
     bool use_normal_texture = true;
+
     int num_lights = 1;
 
     Application(const char* caption, int width, int height);
@@ -84,6 +97,4 @@ public:
         if (camera)
             camera->SetAspectRatio(width / (float)height);
     }
-
-    
 };

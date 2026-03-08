@@ -52,10 +52,6 @@ void Application::Init()
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
 
-    //Texture* lee_texture = Texture::Get("textures/lee_color_specular.tga");
-
-    //Shader* raster_shader = Shader::Get("shaders/raster.vs", "shaders/raster.fs");
-
     Matrix44 m;
     m.SetIdentity();
 
@@ -64,8 +60,6 @@ void Application::Init()
     entity->rotation_axis = Vector3(0, 1, 0);
     entity->rotation_speed = 1.0f;
     entity->scale_value = 20.0f;
-    //entity->texture = lee_texture; 
-	//entity->shader = raster_shader;
 
     Material* mat = new Material();
     mat->diffuse_texture = Texture::Get("textures/lee_color_specular.tga");
@@ -86,6 +80,7 @@ void Application::Init()
 
 void Application::Render()
 {
+    // Always we first clear the screen
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -135,16 +130,16 @@ void Application::Render()
     }
     else
     {
+        // For the quads we don't need depth test
         glDisable(GL_DEPTH_TEST);
 
+        // Quads
         if (shader) {
             shader->Enable();
             shader->SetFloat("u_time", time);
             shader->SetTexture("u_texture", texture);
             shader->SetVector2("u_resolution", Vector2((float)window_width, (float)window_height));
-
             mesh->Render();
-
             shader->Disable();
         }
     }

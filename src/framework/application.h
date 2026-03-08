@@ -42,17 +42,13 @@ public:
     float camera_property_step = 0.1f;
     char current_prop = 'N';
 
-    // -------------------------
     // LAB 4
-    // -------------------------
-    Mesh* mesh = nullptr;          // quad
-    Shader* shader = nullptr;      // quad shader
-    Texture* texture = nullptr;    // quad texture
+    Mesh* mesh = nullptr;          
+    Shader* shader = nullptr;     
+    Texture* texture = nullptr;    
     int actual_quad = 1;
 
-    // -------------------------
     // LAB 5
-    // -------------------------
     sUniformData uniform_data;
     Vector3 ambient_light = Vector3(0.2f, 0.2f, 0.2f);
     std::vector<sLight> scene_lights;

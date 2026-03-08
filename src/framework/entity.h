@@ -25,6 +25,6 @@ public:
 
     void Update(float seconds_elapsed);
 
-    void Render(Camera* camera);             // Lab 4
-    void Render(sUniformData& uniformData);  // Lab 5
+    void Render(Camera* camera);             
+    void Render(sUniformData& uniformData);  
 };

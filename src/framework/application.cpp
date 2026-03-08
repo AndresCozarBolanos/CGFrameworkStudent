@@ -26,16 +26,10 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
-    // -------------------------
-    // CAMERA
-    // -------------------------
     camera = new Camera();
     camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
     camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
-    // -------------------------
-    // LAB STATE
-    // -------------------------
     is_lab5 = false;
     mode = 4;
     num_lights = 1;
@@ -45,9 +39,6 @@ void Application::Init()
     use_specular_texture = true;
     use_normal_texture = true;
 
-    // -------------------------
-    // LIGHTS
-    // -------------------------
     scene_lights.clear();
 
     sLight luz0_white;
@@ -65,9 +56,6 @@ void Application::Init()
     luz2_pink.diffuse_color = Vector3(1.0f, 0.2f, 0.6f);
     scene_lights.push_back(luz2_pink);
 
-    // -------------------------
-    // 3D ENTITY
-    // -------------------------
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
 
@@ -93,9 +81,6 @@ void Application::Init()
     entity->material = mat;
     entity->Update(0.0f);
 
-    // -------------------------
-    // QUAD LAB 4
-    // -------------------------
     mesh = new Mesh();
     mesh->CreateQuad();
 
@@ -182,9 +167,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch (event.keysym.sym)
     {
-        // =========================
-        // GLOBAL: switch Lab 4 / Lab 5
-        // =========================
         case SDLK_l:
         {
             is_lab5 = !is_lab5;
@@ -199,9 +181,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
             break;
         }
 
-        // =========================
-        // LAB 5 CONTROLS
-        // =========================
         case SDLK_g:
         {
             if (is_lab5 && entity && entity->material)
@@ -289,9 +268,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
             break;
         }
 
-        // =========================
-        // LAB 4 CONTROLS
-        // =========================
         case SDLK_a:
         {
             if (!is_lab5)
@@ -346,9 +322,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
             break;
         }
 
-        // =========================
-        // CAMERA / DEBUG CONTROLS
-        // =========================
         case SDLK_v:
         {
             current_prop = 'V';

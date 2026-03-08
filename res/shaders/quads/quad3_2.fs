@@ -3,7 +3,6 @@ uniform sampler2D u_texture;
 uniform float u_time;
 
 void main() {
-    // We want to create a rotating version of the texture
     vec2 uv = v_uv - 0.5;
 
     float alpha = u_time * 0.2;
@@ -17,8 +16,7 @@ void main() {
 
     vec4 color = texture2D(u_texture, uv_rot);
 
-    // One we have the rotated color, we want to create a traffic light effect 
-    // by multiplying the color with a vector that changes over time
+
     float state = mod(floor(u_time), 3.0);
 
     float r = step(0.5, state);

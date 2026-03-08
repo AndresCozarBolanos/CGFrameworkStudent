@@ -3,8 +3,7 @@ uniform vec2 u_resolution;
 
 void main()
 {
-	// we want to create a chessboard pattern
-	// we alyways want to have 16 cells in the y direction, and the x direction will scale with the aspect ratio
+
 	float aspect = u_resolution.x / u_resolution.y;
 	float celdas_y = 16.0;
 	float celdas_x = celdas_y * aspect;

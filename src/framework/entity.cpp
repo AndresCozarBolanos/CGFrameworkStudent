@@ -55,12 +55,36 @@ void Entity::Render(Camera* camera)
 
 void Entity::Render(sUniformData& uniformData)
 {
-    if (!mesh || !material)
+    if (!mesh || !material || uniformData.lights.empty())
         return;
 
     uniformData.model_matrix = model;
 
-    material->Enable(uniformData);
-    mesh->Render();
-    material->Disable();
+    for (size_t i = 0; i < uniformData.lights.size(); ++i)
+    {
+        sUniformData passData = uniformData;
+        passData.lights.clear();
+        passData.lights.push_back(uniformData.lights[i]);
+
+        if (i == 0)
+        {
+            glDisable(GL_BLEND);
+            glDepthFunc(GL_LESS);
+        }
+        else
+        {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE);
+            glDepthFunc(GL_EQUAL);
+
+            passData.ambient_light = Vector3(0.0f, 0.0f, 0.0f);
+        }
+
+        material->Enable(passData);
+        mesh->Render(GL_TRIANGLES);
+        material->Disable();
+    }
+
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
 }

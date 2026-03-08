@@ -44,11 +44,14 @@ void Material::Enable(const sUniformData& uniformData)
 
     shader->SetVector3("u_material_color", color);
     shader->SetFloat("u_shininess", shininess);
+
+    shader->SetInt("u_use_color", uniformData.use_color_texture);
+    shader->SetInt("u_use_specular", uniformData.use_specular_texture);
+    shader->SetInt("u_use_normal", uniformData.use_normal_texture);
 }
 
 void Material::Disable()
 {
-    if (shader) {
+    if (shader)
         shader->Disable();
-    }
 }

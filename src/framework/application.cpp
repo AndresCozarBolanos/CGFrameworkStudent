@@ -117,6 +117,10 @@ void Application::Render()
         uniform_data.ambient_light = ambient_light;
         uniform_data.lights.clear();
 
+        uniform_data.use_color_texture = use_color_texture ? 1 : 0;
+        uniform_data.use_specular_texture = use_specular_texture ? 1 : 0;
+        uniform_data.use_normal_texture = use_normal_texture ? 1 : 0;
+
         if (num_lights >= 1 && scene_lights.size() > 0)
             uniform_data.lights.push_back(scene_lights[0]);
         if (num_lights >= 2 && scene_lights.size() > 1)
@@ -127,6 +131,7 @@ void Application::Render()
         if (entity)
             entity->Render(uniform_data);
     }
+
     else if (mode == 4)
     {
         glEnable(GL_DEPTH_TEST);
@@ -242,9 +247,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_1:
         {
             if (is_lab5)
-            {
                 num_lights = 1;
-            }
             else
             {
                 mode = 1;
@@ -256,9 +259,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_2:
         {
             if (is_lab5)
-            {
                 num_lights = 2;
-            }
             else
             {
                 mode = 2;
@@ -270,9 +271,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_3:
         {
             if (is_lab5)
-            {
                 num_lights = 3;
-            }
             else
             {
                 mode = 3;
@@ -374,9 +373,6 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
             break;
         }
 
-        // =========================
-        // EXIT
-        // =========================
         case SDLK_ESCAPE:
         {
             exit(0);

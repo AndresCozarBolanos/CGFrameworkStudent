@@ -13,11 +13,14 @@ struct sLight {
 struct sUniformData {
     Matrix44 viewprojection_matrix;
     Matrix44 model_matrix;
-    Vector3 camera_position; 
+    Vector3 camera_position;
     Vector3 ambient_light;
     std::vector<sLight> lights;
-};
 
+    int use_color_texture;
+    int use_specular_texture;
+    int use_normal_texture;
+};
 class Material {
 public:
     Shader* shader;

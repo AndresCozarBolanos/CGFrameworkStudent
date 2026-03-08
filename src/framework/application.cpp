@@ -180,7 +180,7 @@ void Application::Render()
             shader->Enable();
             shader->SetFloat("u_time", time);
             shader->SetTexture("u_texture", texture);
-            shader->SetVector2("u_resolution", Vector2(window_width, window_height));
+            shader->SetVector2("u_resolution", Vector2((float)window_width, (float)window_height));
 
             mesh->Render();
 

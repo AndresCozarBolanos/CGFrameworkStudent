@@ -7,10 +7,10 @@ uniform vec3 u_light_position;
 uniform vec3 u_light_color;
 
 varying vec2 v_uv;
-varying vec4 v_color; 
+varying vec4 v_color;
 
 void main()
-{  
+{
     v_uv = gl_MultiTexCoord0.xy;
 
     vec3 world_position = (u_model * gl_Vertex).xyz;
@@ -25,14 +25,11 @@ void main()
     vec3 k_s = vec3(0.5);
     float S = 32.0;
 
-    float dist = length(u_light_position - world_position);
-    float attenuation = 1.0 ;
-
     vec3 ambient = k_a * u_ambient_light;
     vec3 diffuse = max(dot(L, world_normal), 0.0) * k_d * u_light_color;
     vec3 specular = pow(max(dot(R, V), 0.0), S) * k_s * u_light_color;
 
-    vec3 Ip = ambient + attenuation * (diffuse + specular);
+    vec3 Ip = ambient + diffuse + specular;
 
     v_color = vec4(Ip, 1.0);
 

@@ -42,15 +42,6 @@ public:
     float camera_property_step = 0.1f;
     char current_prop = 'N';
 
-    // Old CPU framebuffer stuff
-    FloatImage zBuffer;
-    bool show_texture = true;
-    bool use_zbuffer = true;
-    bool interpolate_uvs = true;
-
-    // Framebuffer
-    Image framebuffer;
-
     // -------------------------
     // LAB 4
     // -------------------------
@@ -91,8 +82,6 @@ public:
         glViewport(0, 0, width, height);
         window_width = width;
         window_height = height;
-
-        framebuffer.Resize(width, height);
 
         if (camera)
             camera->SetAspectRatio(width / (float)height);

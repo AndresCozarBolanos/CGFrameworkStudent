@@ -18,8 +18,6 @@ Application::Application(const char* caption, int width, int height)
     window_height = h;
 
     keystate = SDL_GetKeyboardState(nullptr);
-
-    framebuffer.Resize(w, h);
 }
 
 // Destructor
@@ -38,8 +36,8 @@ void Application::Init()
     // -------------------------
     // LAB STATE
     // -------------------------
-    is_lab5 = false;          // empezamos en lab 4
-    mode = 4;                 // task 4 = mesh 3D
+    is_lab5 = false;
+    mode = 4;
     num_lights = 1;
     ambient_light = Vector3(0.2f, 0.2f, 0.2f);
 
@@ -87,7 +85,7 @@ void Application::Init()
 
     mat->diffuse_texture  = Texture::Get("textures/lee_color_specular.tga");
     mat->normal_texture   = Texture::Get("textures/lee_normal.tga");
-    mat->specular_texture = Texture::Get("textures/lee_color_specular.tga"); // si sacas specular del alpha
+    mat->specular_texture = Texture::Get("textures/lee_color_specular.tga");
 
     mat->color = Vector3(1.0f, 1.0f, 1.0f);
     mat->shininess = 32.0f;

@@ -6,11 +6,11 @@ varying vec3 v_world_position;
 varying vec3 v_world_normal;
 
 void main()
-{  
+{
     v_uv = gl_MultiTexCoord0.xy;
 
     vec3 world_position = (u_model * gl_Vertex).xyz;
-    vec3 world_normal = (u_model * vec4(gl_Normal, 0.0)).xyz;
+    vec3 world_normal = normalize((u_model * vec4(gl_Normal, 0.0)).xyz);
 
     v_world_position = world_position;
     v_world_normal = world_normal;

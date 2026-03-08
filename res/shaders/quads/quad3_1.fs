@@ -3,10 +3,18 @@ uniform sampler2D u_texture;
 uniform float u_time;
 
 void main() {
+    // We want to create a wavy distortion effect on the texture
     vec2 uv = v_uv;
-    uv.x += sin(uv.y * 10.0 + u_time * 3.0) * 0.05;
+    uv.x += sin(v_uv.y * 10.0 + u_time * 3.0) * 0.03;
+    uv.y += cos(v_uv.x * 10.0 + u_time * 3.0) * 0.03;
+
     vec4 color = texture2D(u_texture, uv);
-    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
-    
-    gl_FragColor = vec4(vec3(gray), color.a);
+
+    vec3 inverted = 1.0 - color.rgb;
+
+    float factor = 0.5 + 0.5 * sin(u_time * 3.0);
+
+    vec3 finalColor = mix(color.rgb, inverted, factor);
+
+    gl_FragColor = vec4(finalColor, color.a);
 }

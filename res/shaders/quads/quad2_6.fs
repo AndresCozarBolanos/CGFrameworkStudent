@@ -5,7 +5,7 @@ uniform vec2 u_resolution;
 void main() {
     vec2 texel = 1.0 / u_resolution; 
     
-    float radio = 5.0; 
+    float radio = 4.0; 
     vec2 offset = texel * radio;
     
     vec4 color = vec4(0.0);

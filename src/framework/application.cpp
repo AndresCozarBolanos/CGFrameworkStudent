@@ -243,6 +243,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
                 num_lights = 1;
             else
                 mode = 1;
+                shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
             break;
         }
 
@@ -252,6 +253,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
                 num_lights = 2;
             else
                 mode = 2;
+                shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs");
             break;
         }
 
@@ -261,6 +263,7 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
                 num_lights = 3;
             else
                 mode = 3;
+                shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs");
             break;
         }
 

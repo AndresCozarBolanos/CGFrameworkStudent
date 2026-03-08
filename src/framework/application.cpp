@@ -175,110 +175,199 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
 {
     switch (event.keysym.sym)
     {
-    case SDLK_l:
-        is_lab5 = !is_lab5;
-        if (is_lab5) {
-            if (entity && entity->material) entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
+        // =========================
+        // GLOBAL: switch Lab 4 / Lab 5
+        // =========================
+        case SDLK_l:
+        {
+            is_lab5 = !is_lab5;
+
+            if (entity && entity->material)
+            {
+                if (is_lab5)
+                    entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
+                else
+                    entity->material->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
+            }
+            break;
         }
-        else {
-            if (mode == 4 && entity && entity->material) entity->material->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
+
+        // =========================
+        // LAB 5 CONTROLS
+        // =========================
+        case SDLK_g:
+        {
+            if (is_lab5 && entity && entity->material)
+                entity->material->shader = Shader::Get("shaders/lighting/gouraud.vs", "shaders/lighting/gouraud.fs");
+            break;
         }
-        break;
 
-    case SDLK_1:
-        if (is_lab5) num_lights = 1;
-        else { mode = 1; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs"); }
-        break;
-    case SDLK_2:
-        if (is_lab5) num_lights = 2;
-        else { mode = 2; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs"); }
-        break;
-    case SDLK_3:
-        if (is_lab5) num_lights = 3;
-        else { mode = 3; shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs"); }
-        break;
-    case SDLK_4:
-        if (is_lab5) num_lights = 4;
-        else { mode = 4; shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs"); }
-        break;
-
-    case SDLK_c: 
-        if (is_lab5) use_color_texture = !use_color_texture;
-        else {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_3.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_3.fs");
+        case SDLK_p:
+        {
+            if (is_lab5 && entity && entity->material)
+                entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
+            break;
         }
-        break;
 
-    case SDLK_n: 
-        if (is_lab5) use_normal_texture = !use_normal_texture;
-        else current_prop = 'N';
-        break;
-
-    case SDLK_g:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/gouraud.vs", "shaders/lighting/gouraud.fs");
-        break;
-    case SDLK_p:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/phong.vs", "shaders/lighting/phong.fs");
-        break;
-    case SDLK_s:
-        if (is_lab5 && entity) entity->material->shader = Shader::Get("shaders/lighting/phong_s.vs", "shaders/lighting/phong_s.fs");
-        break;
-
-    case SDLK_a:
-        if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs");
-            else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs");
-            else if (mode == 4) shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
+        case SDLK_c:
+        {
+            if (is_lab5)
+                use_color_texture = !use_color_texture;
+            else
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_3.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_3.fs");
+            }
+            break;
         }
-        break;
-    case SDLK_b:
-        if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_2.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_2.fs");
-            else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_2.fs");
-        }
-        break;
-    case SDLK_d:
-        if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_4.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_4.fs");
-        }
-        break;
-    case SDLK_e:
-        if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_5.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_5.fs");
-        }
-        break;
-    case SDLK_f:
-        if (!is_lab5) {
-            if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_6.fs");
-            else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_6.fs");
-        }
-        break;
 
-    case SDLK_v: current_prop = 'V'; break;
-    case SDLK_t: show_texture = !show_texture; break;
-    case SDLK_z: use_zbuffer = !use_zbuffer; break;
+        case SDLK_s:
+        {
+            if (is_lab5)
+                use_specular_texture = !use_specular_texture;
+            break;
+        }
 
-    case SDLK_PLUS:
-    case SDLK_KP_PLUS:
-        if (current_prop == 'N') camera->near_plane += 1.0f;
-        if (current_prop == 'V') camera->fov += 5.0f;
-        camera->UpdateProjectionMatrix();
-        break;
+        case SDLK_n:
+        {
+            if (is_lab5)
+                use_normal_texture = !use_normal_texture;
+            else
+                current_prop = 'N';
+            break;
+        }
 
-    case SDLK_MINUS:
-    case SDLK_KP_MINUS:
-        if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
-        if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
-        camera->UpdateProjectionMatrix();
-        break;
+        case SDLK_1:
+        {
+            if (is_lab5)
+                num_lights = 1;
+            else
+                mode = 1;
+            break;
+        }
 
-    case SDLK_ESCAPE: exit(0);
-    default: break;
+        case SDLK_2:
+        {
+            if (is_lab5)
+                num_lights = 2;
+            else
+                mode = 2;
+            break;
+        }
+
+        case SDLK_3:
+        {
+            if (is_lab5)
+                num_lights = 3;
+            else
+                mode = 3;
+            break;
+        }
+
+        case SDLK_4:
+        {
+            if (is_lab5)
+                num_lights = 4;
+            else
+                mode = 4;
+            break;
+        }
+
+        // =========================
+        // LAB 4 CONTROLS
+        // =========================
+        case SDLK_a:
+        {
+            if (!is_lab5)
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs");
+                else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs");
+                else if (mode == 4 && entity && entity->material)
+                    entity->material->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
+            }
+            break;
+        }
+
+        case SDLK_b:
+        {
+            if (!is_lab5)
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_2.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_2.fs");
+                else if (mode == 3) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_2.fs");
+            }
+            break;
+        }
+
+        case SDLK_d:
+        {
+            if (!is_lab5)
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_4.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_4.fs");
+            }
+            break;
+        }
+
+        case SDLK_e:
+        {
+            if (!is_lab5)
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_5.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_5.fs");
+            }
+            break;
+        }
+
+        case SDLK_f:
+        {
+            if (!is_lab5)
+            {
+                if (mode == 1) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_6.fs");
+                else if (mode == 2) shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_6.fs");
+            }
+            break;
+        }
+
+        // =========================
+        // CAMERA / DEBUG CONTROLS
+        // =========================
+        case SDLK_v:
+        {
+            current_prop = 'V';
+            break;
+        }
+
+        case SDLK_PLUS:
+        case SDLK_KP_PLUS:
+        {
+            if (current_prop == 'N') camera->near_plane += 1.0f;
+            if (current_prop == 'V') camera->fov += 5.0f;
+            camera->UpdateProjectionMatrix();
+            break;
+        }
+
+        case SDLK_MINUS:
+        case SDLK_KP_MINUS:
+        {
+            if (current_prop == 'N') camera->near_plane = std::max(0.01f, camera->near_plane - 1.0f);
+            if (current_prop == 'V') camera->fov = std::max(1.0f, camera->fov - 5.0f);
+            camera->UpdateProjectionMatrix();
+            break;
+        }
+
+        // =========================
+        // EXIT
+        // =========================
+        case SDLK_ESCAPE:
+        {
+            exit(0);
+            break;
+        }
+
+        default:
+            break;
     }
 }
 

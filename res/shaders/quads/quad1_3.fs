@@ -5,12 +5,15 @@ void main()
 {
 	float aspect = u_resolution.x / u_resolution.y;
 
+	// We want to create a grid of lines 
+	// the number of lines will scale with the aspect ratio
 	float line_v = sin(v_uv.x * 20.0 * aspect); 
     float line_h = sin(v_uv.y * 20.0 * aspect);
 
+	// we want the lines to ve diffuminated
 	vec3 col_v = mix(vec3(0.0), vec3(1.0, 0.0, 0.0), line_v);
     vec3 col_h = mix(vec3(0.0), vec3(0.0, 0.0, 1.0), line_h);
 
-	vec3 col_c = col_v + col_h;
-	gl_FragColor = vec4(col_c, 1.0);
+	vec3 color = col_v + col_h;
+	gl_FragColor = vec4(color, 1.0);
 }

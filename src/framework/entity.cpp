@@ -33,6 +33,26 @@ void Entity::Update(float seconds_elapsed)
     model = T * R * S;
 }
 
+void Entity::Render(Camera* camera)
+{
+    if (!mesh || !material || !material->shader || !camera)
+        return;
+
+    Shader* shader = material->shader;
+
+    shader->Enable();
+
+    shader->SetMatrix44("u_model", model);
+    shader->SetMatrix44("u_viewprojection", camera->viewprojection_matrix);
+
+    if (material->diffuse_texture)
+        shader->SetTexture("u_texture", material->diffuse_texture);
+
+    mesh->Render(GL_TRIANGLES);
+
+    shader->Disable();
+}
+
 void Entity::Render(sUniformData& uniformData)
 {
     if (!mesh || !material)

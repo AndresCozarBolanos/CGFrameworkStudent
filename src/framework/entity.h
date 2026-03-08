@@ -4,18 +4,14 @@
 #include "material.h"
 
 struct sUniformData;
+class Camera;
 
 class Entity
 {
 public:
-
-    // Geometry
     Mesh* mesh = nullptr;
-
-    // Material (shader + textures)
     Material* material = nullptr;
 
-    // Transform
     Matrix44 model;
 
     Vector3 position = Vector3(0,0,0);
@@ -25,12 +21,10 @@ public:
     float rotation_angle = 0.0f;
     float scale_value = 1.0f;
 
-    // Constructor
     Entity(Mesh* m, const Matrix44& initial_model);
 
-    // Update transform
     void Update(float seconds_elapsed);
 
-    // Render using GPU pipeline
-    void Render(sUniformData& uniformData);
+    void Render(Camera* camera);             // Lab 4
+    void Render(sUniformData& uniformData);  // Lab 5
 };

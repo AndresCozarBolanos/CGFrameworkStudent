@@ -28,10 +28,28 @@ Application::~Application() {}
 // Initialization
 void Application::Init()
 {
+    // -------------------------
+    // CAMERA
+    // -------------------------
     camera = new Camera();
     camera->LookAt(Vector3(0, 10, 20), Vector3(0, 5, 0), Vector3(0, 1, 0));
     camera->SetPerspective(45.0f, window_width / (float)window_height, 0.1f, 1000.0f);
 
+    // -------------------------
+    // LAB STATE
+    // -------------------------
+    is_lab5 = false;          // empezamos en lab 4
+    mode = 4;                 // task 4 = mesh 3D
+    num_lights = 1;
+    ambient_light = Vector3(0.2f, 0.2f, 0.2f);
+
+    use_color_texture = true;
+    use_specular_texture = true;
+    use_normal_texture = true;
+
+    // -------------------------
+    // LIGHTS
+    // -------------------------
     scene_lights.clear();
 
     sLight luz0_white;
@@ -49,6 +67,9 @@ void Application::Init()
     luz2_pink.diffuse_color = Vector3(1.0f, 0.2f, 0.6f);
     scene_lights.push_back(luz2_pink);
 
+    // -------------------------
+    // 3D ENTITY
+    // -------------------------
     Mesh* lee = new Mesh();
     lee->LoadOBJ("meshes/lee.obj");
 
@@ -62,79 +83,65 @@ void Application::Init()
     entity->scale_value = 20.0f;
 
     Material* mat = new Material();
-    mat->diffuse_texture = Texture::Get("textures/lee_color_specular.tga");
     mat->shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
-    entity->material = mat;
 
+    mat->diffuse_texture  = Texture::Get("textures/lee_color_specular.tga");
+    mat->normal_texture   = Texture::Get("textures/lee_normal.tga");
+    mat->specular_texture = Texture::Get("textures/lee_color_specular.tga"); // si sacas specular del alpha
+
+    mat->color = Vector3(1.0f, 1.0f, 1.0f);
+    mat->shininess = 32.0f;
+
+    entity->material = mat;
     entity->Update(0.0f);
 
+    // -------------------------
+    // QUAD LAB 4
+    // -------------------------
     mesh = new Mesh();
     mesh->CreateQuad();
-    texture = Texture::Get("images/fruits.png");
 
-    mode = 4;
-    //mat->shader = Shader::Get("shaders/phong2.vs", "shaders/phong2.fs");
-    shader = Shader::Get("shaders/raster/raster.vs", "shaders/raster/raster.fs");
-    //shader = Shader::Get("shaders/quad.vs", "shaders/quad1_1.fs");
+    texture = Texture::Get("images/fruits.png");
+    shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
 }
 
 void Application::Render()
 {
-    // Always we first clear the screen
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (mode == 4 || is_lab5)
+    if (is_lab5)
     {
         glEnable(GL_DEPTH_TEST);
 
         uniform_data.viewprojection_matrix = camera->viewprojection_matrix;
         uniform_data.camera_position = camera->eye;
         uniform_data.ambient_light = ambient_light;
-
         uniform_data.lights.clear();
 
-        if (is_lab5) {
-            if (num_lights == 1) {
-                if (scene_lights.size() > 0) uniform_data.lights.push_back(scene_lights[0]);
-            }
-            else if (num_lights == 2) {
-                if (scene_lights.size() > 1) uniform_data.lights.push_back(scene_lights[1]);
-                if (scene_lights.size() > 2) uniform_data.lights.push_back(scene_lights[2]);
-            }
-        }
-        else {
-            if (scene_lights.size() > 0) uniform_data.lights.push_back(scene_lights[0]);
-        }
+        if (num_lights >= 1 && scene_lights.size() > 0)
+            uniform_data.lights.push_back(scene_lights[0]);
+        if (num_lights >= 2 && scene_lights.size() > 1)
+            uniform_data.lights.push_back(scene_lights[1]);
+        if (num_lights >= 3 && scene_lights.size() > 2)
+            uniform_data.lights.push_back(scene_lights[2]);
 
-        if (entity) {
-            if (entity->material && entity->material->shader) {
-                entity->material->shader->Enable(); 
-
-                if (is_lab5) {
-                    entity->material->shader->SetInt("u_use_color", use_color_texture ? 1 : 0);
-                    entity->material->shader->SetInt("u_use_specular", use_specular_texture ? 1 : 0);
-                    entity->material->shader->SetInt("u_use_normal", use_normal_texture ? 1 : 0);
-                }
-                else {
-                    entity->material->shader->SetInt("u_use_color", 1);
-                    entity->material->shader->SetInt("u_use_specular", 1);
-                    entity->material->shader->SetInt("u_use_normal", 1);
-                }
-
-                entity->material->shader->Disable(); 
-            }
-
+        if (entity)
             entity->Render(uniform_data);
-        }
+    }
+    else if (mode == 4)
+    {
+        glEnable(GL_DEPTH_TEST);
+
+        if (entity)
+            entity->Render(camera);
     }
     else
     {
-        // For the quads we don't need depth test
         glDisable(GL_DEPTH_TEST);
 
-        // Quads
-        if (shader) {
+        if (shader)
+        {
             shader->Enable();
             shader->SetFloat("u_time", time);
             shader->SetTexture("u_texture", texture);
@@ -144,19 +151,17 @@ void Application::Render()
         }
     }
 }
+
 void Application::Update(float dt)
 {
-    if (mode == 4)
-    {
-        if (entity) entity->Update(dt);
-    }
-   
+    if ((mode == 4 || is_lab5) && entity)
+        entity->Update(dt);
+
     float speed = 0.5f;
 
     if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         Matrix44 R;
         R.MakeRotationMatrix(-mouse_delta.x * speed * dt, Vector3(0, 1, 0));
-		// Rotate the camera around the center point
         Vector3 new_eye = R * (camera->eye - camera->center);
         camera->eye = camera->center + new_eye;
         camera->LookAt(camera->eye, camera->center, camera->up);
@@ -168,7 +173,6 @@ void Application::Update(float dt)
         camera->center = camera->center - delta;
         camera->UpdateViewMatrix();
     }
-
 }
 
 void Application::OnKeyPressed(SDL_KeyboardEvent event)
@@ -240,30 +244,42 @@ void Application::OnKeyPressed(SDL_KeyboardEvent event)
         case SDLK_1:
         {
             if (is_lab5)
+            {
                 num_lights = 1;
+            }
             else
+            {
                 mode = 1;
                 shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad1_1.fs");
+            }
             break;
         }
 
         case SDLK_2:
         {
             if (is_lab5)
+            {
                 num_lights = 2;
+            }
             else
+            {
                 mode = 2;
                 shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad2_1.fs");
+            }
             break;
         }
 
         case SDLK_3:
         {
             if (is_lab5)
+            {
                 num_lights = 3;
+            }
             else
+            {
                 mode = 3;
                 shader = Shader::Get("shaders/quads/quad.vs", "shaders/quads/quad3_1.fs");
+            }
             break;
         }
 

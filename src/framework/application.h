@@ -4,8 +4,6 @@
 #include "main/includes.h"
 #include "framework.h"
 #include "image.h"
-#include "button.h"
-#include "particlesystem.h"
 #include "entity.h"   
 #include "mesh.h"
 #include "shader.h"
@@ -44,31 +42,6 @@ public:
 
     // Framebuffer
     Image framebuffer;
-    Image canvas;
-    Color backgroundColor = Color::BLACK;
-
-    // Tools (paint)
-    enum class Tool { NONE, PENCIL, ERASER, LINE, RECT, TRIANGLE };
-    Tool currentTool = Tool::NONE;
-
-    // State (paint)
-    bool isPlacing = false;
-    bool isDrawing = false;
-    Vector2 startPos, endPos, prevPos;
-
-    int triClicks = 0;
-    Vector2 triP0, triP1;
-
-    Color currentColor = Color::WHITE;
-    bool isFilled = false;
-
-    int borderWidth = 1;
-
-    bool wireframe = false;
-
-    // UI
-    std::vector<Button> buttons;
-    int toolbarH = 50;
 
     //lab 4
     Mesh* mesh = nullptr;
@@ -85,10 +58,6 @@ public:
     bool use_specular_texture = true;
     bool use_normal_texture = true;
     int num_lights = 1;
-
-    // Particles 
-    ParticleSystem ps;
-    bool particlesMode = false;
 
     Application(const char* caption, int width, int height);
     ~Application();
@@ -111,8 +80,6 @@ public:
         window_height = height;
 
         framebuffer.Resize(width, height);
-        canvas.Resize(width, height);
-        canvas.Fill(backgroundColor);
 
         if (camera)
             camera->SetAspectRatio(width / (float)height);

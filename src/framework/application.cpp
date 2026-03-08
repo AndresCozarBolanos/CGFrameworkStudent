@@ -3,6 +3,7 @@
 #include "shader.h"
 #include "entity.h"
 #include "material.h"
+#include "utils.h"
 #include <algorithm>
 
 // Constructor
